@@ -9,6 +9,8 @@
     - mysql_server
     - os_hardening
     - ssh_hardening
+    - prometheus-node-exporter
+    - rapid7-agent
   vars:
     - ssh_client_password_login: true
     - ssh_server_password_login: true
