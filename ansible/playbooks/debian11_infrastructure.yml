@@ -6,11 +6,12 @@
   become: true
   gather_facts: true
   roles:
-    - mysql_server
-    - os_hardening
-    - ssh_hardening
-    - prometheus-node-exporter
-    - rapid7-agent
+    # - mysql_server
+    # - os_hardening
+    # - ssh_hardening
+    # - prometheus-node-exporter
+    # - rapid7-agent
+    - wazuh-agent
   vars:
     - ssh_client_password_login: true
     - ssh_server_password_login: true
