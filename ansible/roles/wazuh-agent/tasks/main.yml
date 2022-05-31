@@ -14,7 +14,7 @@
 
 - name: Wazuh agent | Install wazuh agent
   apt:
-    pkg: "wazuh-agent"
+    pkg: "wazuh-agent:{{ wazuh_agent_full_version }}"
     state: present
   environment:
     WAZUH_MANAGER: "{{ wazuh_manager_host }}"
