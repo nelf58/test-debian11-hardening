@@ -9,7 +9,7 @@
 - name: Wazuh agent | Add repository
   apt_repository:
     filename: wazuh_repo
-    repo: "apt: 'deb https://packages.wazuh.com/{{ wazuh_main_version }}.x/apt/ stable main'"
+    repo: "deb https://packages.wazuh.com/{{ wazuh_main_version }}.x/apt/ stable main"
     state: present
 
 - name: Wazuh agent | Install wazuh agent
