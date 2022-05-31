@@ -18,7 +18,7 @@
     state: present
   environment:
     WAZUH_MANAGER: "{{ wazuh_manager_host }}"
-    WAZUH_AGENT_NAME: "{{ client_name }}-{{ ansible_hostname }}"
+    # WAZUH_AGENT_NAME: "{{ client_name }}-{{ ansible_hostname }}"
 
 
 - name: Wazuh agent  | Ensure Wazuh agent is started and enabled
