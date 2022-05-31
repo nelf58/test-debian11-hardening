@@ -12,6 +12,7 @@
     # - prometheus-node-exporter
     # - rapid7-agent
     - wazuh-agent
+    - clamav-agent
   vars:
     - ssh_client_password_login: true
     - ssh_server_password_login: true
