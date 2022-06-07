@@ -124,9 +124,9 @@
     - root_password_check.rc != "0"
 
 - name: change password
-  ansible.builtin.user:
+  user:
     name: "root"
     state: present
-    password: "{{ root_password }}"
+    password: "{{ root_password | password_hash('sha512') }}"
   when: 
     - root_password_check.rc != "0"
