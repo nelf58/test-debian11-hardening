@@ -70,11 +70,11 @@
   shell: aideinit
   args:
     executable: /bin/bash
-  # when: aide_db_stat.stat.exists == False
+  when: aide_db_stat.stat.exists == False
 
 - name: Wazuh | 2528 | Ensure AIDE is installed | AIDE DB new stat
   stat: path=/var/lib/aide/aide.db.new
-  # register: aide_db_new_stat
+  register: aide_db_new_stat
 
 # - name: Wazuh | 2528 | Ensure AIDE is installed | AIDE DB stat
 #   stat: path=/var/lib/aide/aide.db
@@ -90,9 +90,9 @@
   copy:
     src: /var/lib/aide/aide.db.new
     dest: /var/lib/aide/aide.db
-  # when: 
-  #   - aide_db_new_stat.stat.exists
-  #   - aide_db_stat.stat.exists == False
+  when: 
+    - aide_db_new_stat.stat.exists
+    - aide_db_stat.stat.exists == False
 
 - name: Remove file (delete file)
   file:
