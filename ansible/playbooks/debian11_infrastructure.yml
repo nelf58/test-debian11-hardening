@@ -19,3 +19,14 @@
     - ssh_server_password_login: true
     - sshd_authenticationmethods: "publickey password"
     - disable_vfat: false
+  tasks:
+    - name: Flush handlers
+      meta: flush_handlers
+    - name: Extra | Retrieving root password (if changed)
+      debug:
+        msg: 
+          - "New root password: {{ root_password }}"
+          - "It's necessary to have a password for root user. Wazuh 2532."
+          - "Compliance: cis 1.5.3; cis_csc 5.1; nist_800_53 CM.1; pci_dss 2.2.4; tsc CC5.2"
+        when: root_password is defined
+
