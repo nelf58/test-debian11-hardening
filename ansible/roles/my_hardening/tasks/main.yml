@@ -111,7 +111,7 @@
 ### - name: Wazuh | 2531 | Ensure bootloader password is set
 
 - name: Wazuh | 2532 | Ensure authentication required for single user mode
-  shell: grep "^root:[*\!\:]:" /etc/shadow
+  shell: grep "^root:[*\!\:]" /etc/shadow
   register: root_password_check
   changed_when: false
   failed_when: false
