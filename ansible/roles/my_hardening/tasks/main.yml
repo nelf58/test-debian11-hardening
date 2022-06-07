@@ -16,7 +16,6 @@
     dest: /etc/modprobe.d/vfat.conf
     regexp: "^.*install vfat.*$"
     line: "install vfat /bin/true"
-    state: present
     create: true
   when: disable_vfat
 
@@ -25,7 +24,6 @@
     dest: /etc/modprobe.d/usb_storage.conf
     regexp: "^.*install usb-storage.*$"
     line: "install usb-storage /bin/true"
-    state: present
     create: true
 
 - name: Wazuh | 2524 | Disable USB Storage | modprobe
@@ -45,7 +43,6 @@
     line: "Defaults use_pty"
     validate: "visudo -cf %s"
     create: yes
-    state: present
 
 - name: Wazuh | 2527 | Ensure sudo log file exists
   lineinfile:
@@ -103,7 +100,7 @@
 - name: Wazuh | 2530 | Ensure permissions on bootloader config are configured
   file:
     path: "/boot/grub/grub.cfg"
-    mode: "og-rwx"
+    mode: 0400
     owner: root
     group: root
 
@@ -136,7 +133,6 @@
     dest: /etc/security/limits.d/core.conf
     line: "*               hard    core            0"
     regexp: '^\s*(#)?\*\s+hard\s+core\s+\d+'
-    state: present
     create: true
 
 - name: Wazuh | 2536 | Ensure core dumps are restricted
@@ -161,6 +157,51 @@
   template:
     src: motd.j2
     dest: /etc/motd
-    mode: 0400
+    mode: 0644
     owner: root
     group: root
+
+- name: Wazuh | 2542 | Ensure local login warning banner is configured properly 
+  template:
+    src: issue.j2
+    dest: /etc/issue
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Wazuh | 2543 | Ensure remote login warning banner is configured properly
+  template:
+    src: issue.net.j2
+    dest: /etc/issue.net
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Wazuh | 2548 | Ensure updates, patches, and additional security software are installed
+  apt:
+    upgrade: yes
+    update_cache: yes
+
+- name: Wazuh | 2552 | Ensure systemd-timesyncd is configured | apt
+  apt:
+    pkg:
+    - systemd-timesyncd
+
+- name: Wazuh | 2552 | Ensure systemd-timesyncd is configured | config
+  lineinfile:
+    dest: /etc/systemd/timesyncd.conf
+    regexp: "^.*install vfat.*$"
+    line: "install vfat /bin/true"
+    state: present
+    create: true
+  when: disable_vfat
+
+- name: Wazuh | 2552 | Ensure systemd-timesyncd is configured | config
+  lineinfile:
+    dest: /etc/sysctl.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  loop:
+    - { regexp: '^\s*#*\s*NTP\s*=.*', line: 'NTP=0.debian.pool.ntp.org 1.debian.pool.ntp.org' }
+    - { regexp: '^\s*#*\s*FallbackNTP\s*=.*', line: 'FallbackNTP=2.debian.pool.ntp.org 3.debian.pool.ntp.org' }
+    - { regexp: '^\s*#*\s*RootDistanceMax\s*=.*', line: 'RootDistanceMax=1' }
