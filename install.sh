@@ -25,4 +25,4 @@ git checkout $GIT_BRANCH
 export ANSIBLE_ROLES_PATH="$INSTALL_TMP_DIR/test-debian11-hardening/ansible/roles/"
 # ansible-galaxy install -r roles/requirements.yml
 
-ansible-playbook --connection=local $INSTALL_TMP_DIR/test-debian11-hardening/ansible/playbooks/base/main.yml -i 127.0.0.1, -v 
+ansible-playbook --connection=local $INSTALL_TMP_DIR/test-debian11-hardening/ansible/playbooks/debian11_infrastructure.yml -i 127.0.0.1, -v 
