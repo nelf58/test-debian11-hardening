@@ -117,19 +117,50 @@
   failed_when: false
   check_mode: no
 
-- debug:
-    msg: "{{ root_password_check }}"
-
 - name: Wazuh | 2532 | Ensure authentication required for single user mode | generate password
   set_fact:
     root_password: "{{ root_password_gen }}"
   when: 
     - root_password_check.rc == 0
 
-- name: change password
+- name:  Wazuh | 2532 | Ensure authentication required for single user mode | set root password
   user:
     name: "root"
     state: present
     password: "{{ root_password | password_hash('sha512') }}"
   when: 
     - root_password_check.rc == 0
+
+- name: Wazuh | 2536 | Ensure core dumps are restricted | limits
+  lineinfile:
+    dest: /etc/security/limits.d/core.conf
+    line: "*               hard    core            0"
+    regexp: '^\s*(#)?\*\s+hard\s+core\s+\d+'
+    state: present
+    create: true
+
+- name: Wazuh | 2536 | Ensure core dumps are restricted
+  sysctl:
+    name: fs.suid_dumpable
+    value: "0"
+    sysctl_file: /etc/sysctl.d/fs-suid_dumpable.conf | sysctl
+    state: present
+    reload: true
+    sysctl_set: true
+
+- name: Wazuh | 2536 | Ensure core dumps are restricted | apt
+  apt:
+    name: systemd-coredump
+    state: present
+
+- name: Wazuh | 2536 | Ensure core dumps are restricted | daemon_reload
+  systemd:
+    daemon_reload: yes
+
+- name: Wazuh | 2541 | Ensure message of the day is configured properly
+  template:
+    src: motd.j2
+    dest: /etc/motd
+    mode: 0400
+    owner: root
+    group: root
