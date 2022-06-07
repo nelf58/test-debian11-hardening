@@ -121,7 +121,7 @@
   set_fact:
     root_password: "{{ root_password_gen }}"
   when: 
-    - root_password_check.rc != "0"
+    - root_password_check.rc == "0"
 
 - name: change password
   user:
@@ -129,4 +129,4 @@
     state: present
     password: "{{ root_password | password_hash('sha512') }}"
   when: 
-    - root_password_check.rc != "0"
+    - root_password_check.rc == "0"
