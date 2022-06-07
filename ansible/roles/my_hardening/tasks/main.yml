@@ -112,7 +112,7 @@
 
 - name: Wazuh | 2532 | Ensure authentication required for single user mode
   shell: grep "^root:[*\!]:" /etc/shadow
-  register: current_root_password
+  register: root_password_check
   changed_when: false
   failed_when: false
   check_mode: no
@@ -120,9 +120,13 @@
 - name: Wazuh | 2532 | Ensure authentication required for single user mode | generate password
   set_fact:
     root_password: "{{ root_password_gen }}"
+  when: 
+    - root_password_check.rc != "0"
 
-# - name: change password
-#   ansible.builtin.user:
-#     name: "root"
-#     state: present
-#     password: "{{ root_password }}"
+- name: change password
+  ansible.builtin.user:
+    name: "root"
+    state: present
+    password: "{{ root_password }}"
+  when: 
+    - root_password_check.rc != "0"
