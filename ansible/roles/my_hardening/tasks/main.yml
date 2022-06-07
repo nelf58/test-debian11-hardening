@@ -189,15 +189,6 @@
 
 - name: Wazuh | 2552 | Ensure systemd-timesyncd is configured | config
   lineinfile:
-    dest: /etc/systemd/timesyncd.conf
-    regexp: "^.*install vfat.*$"
-    line: "install vfat /bin/true"
-    state: present
-    create: true
-  when: disable_vfat
-
-- name: Wazuh | 2552 | Ensure systemd-timesyncd is configured | config
-  lineinfile:
     dest: /etc/sysctl.conf
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
@@ -205,3 +196,10 @@
     - { regexp: '^\s*#*\s*NTP\s*=.*', line: 'NTP=0.debian.pool.ntp.org 1.debian.pool.ntp.org' }
     - { regexp: '^\s*#*\s*FallbackNTP\s*=.*', line: 'FallbackNTP=2.debian.pool.ntp.org 3.debian.pool.ntp.org' }
     - { regexp: '^\s*#*\s*RootDistanceMax\s*=.*', line: 'RootDistanceMax=1' }
+  notify: Restart systemd-timesyncd
+
+- name: Wazuh | 2552 | Ensure systemd-timesyncd is configured | service
+  service:
+    name: systemd-timesyncd
+    enabled: yes
+    state: started
