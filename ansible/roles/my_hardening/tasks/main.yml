@@ -1,0 +1,101 @@
+---
+
+- name: Wazuh | create /etc/modprobe.d/ for modprobe conf files
+  file:
+    path: /etc/modprobe.d
+    state: directory
+
+- name: Wazuh | 2506 | Ensure mounting of FAT filesystems is disabled | modprobe
+  modprobe:
+    name: vfat
+    state: absent
+  when: disable_vfat
+
+- name: Wazuh | 2506 | Ensure mounting of FAT filesystems is disabled | /etc/modprobe.d/
+  lineinfile:
+    dest: /etc/modprobe.d/vfat.conf
+    regexp: "^.*install vfat.*$"
+    line: "install vfat /bin/true"
+    state: present
+    create: true
+  when: disable_vfat
+
+- name: Wazuh | 2524 | Disable USB Storage | /etc/modprobe.d/
+  lineinfile:
+    dest: /etc/modprobe.d/usb_storage.conf
+    regexp: "^.*install usb-storage.*$"
+    line: "install usb-storage /bin/true"
+    state: present
+    create: true
+
+- name: Wazuh | 2524 | Disable USB Storage | modprobe
+  modprobe:
+    name: usb-storage
+    state: absent
+
+- name: Wazuh | create /etc/sudoers.d/ for sudo conf files
+  file:
+    path: /etc/sudoers.d
+    state: directory
+
+- name: Wazuh | 2526 | Ensure sudo commands use pty
+  lineinfile:
+    dest: /etc/sudoers.d/pty
+    regexp: "^.*Defaults use_pty.*"
+    line: "Defaults use_pty"
+    validate: "visudo -cf %s"
+    create: yes
+    state: present
+
+- name: Wazuh | 2527 | Ensure sudo log file exists
+  lineinfile:
+    dest: /etc/sudoers.d/sudo_logs
+    regexp: "^.*Defaults logfile.*"
+    line: 'Defaults logfile="/var/log/sudo.log"'
+    validate: "visudo -cf %s"
+    create: yes
+    state: present
+
+- name: Wazuh | 2528 | Ensure AIDE is installed | apt
+  apt:
+    pkg:
+    - aide
+    - aide-common
+
+- name: Wazuh | 2528 | Ensure AIDE is installed | AIDE DB stat
+  stat: path=/var/lib/aide/aide.db
+  register: aide_db_stat
+
+- name: Wazuh | 2528 | Ensure AIDE is installed | AIDE init
+  shell: aideinit
+  args:
+    executable: /bin/bash
+  when: aide_db_stat.stat.exists == False
+
+- name: Wazuh | 2528 | Ensure AIDE is installed | AIDE DB new stat
+  stat: path=/var/lib/aide/aide.db.new
+  when: aide_db_stat.stat.exists == False
+  register: aide_db_new_stat
+
+# - name: Wazuh | 2528 | Ensure AIDE is installed | AIDE DB stat
+#   stat: path=/var/lib/aide/aide.db
+#   register: aide_db_stat
+
+
+# - name: Wazuh | 2528 | Ensure AIDE is installed | AIDE DB
+#   shell: mv /var/lib/aide/aide.db.new /var/lib/aide/aide.db
+#   args:
+#     executable: /bin/bash
+
+- name: Wazuh | 2528 | Ensure AIDE is installed | AIDE DB copy
+  copy:
+    src: /var/lib/aide/aide.db.new
+    dest: /var/lib/aide/aide.db
+  when: 
+    - aide_db_new_stat.stat.exists
+    - aide_db_stat.stat.exists == False
+
+- name: Remove file (delete file)
+  file:
+    path: /var/lib/aide/aide.db.new
+    state: absent
