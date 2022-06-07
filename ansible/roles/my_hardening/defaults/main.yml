@@ -1,3 +1,4 @@
 ---
 
 disable_vfat: true
+root_password_gen: "{{ lookup('password', '/dev/null length=22 chars=ascii_letters,digits') }}"

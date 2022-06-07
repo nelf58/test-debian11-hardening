@@ -62,31 +62,21 @@
     - aide
     - aide-common
 
-- name: Wazuh | 2528 | Ensure AIDE is installed | AIDE DB stat
+- name: Wazuh | 2528 | Ensure AIDE is installed | DB stat
   stat: path=/var/lib/aide/aide.db
   register: aide_db_stat
 
-- name: Wazuh | 2528 | Ensure AIDE is installed | AIDE init
+- name: Wazuh | 2528 | Ensure AIDE is installed | init
   shell: aideinit
   args:
     executable: /bin/bash
   when: aide_db_stat.stat.exists == False
 
-- name: Wazuh | 2528 | Ensure AIDE is installed | AIDE DB new stat
+- name: Wazuh | 2528 | Ensure AIDE is installed | DB new stat
   stat: path=/var/lib/aide/aide.db.new
   register: aide_db_new_stat
 
-# - name: Wazuh | 2528 | Ensure AIDE is installed | AIDE DB stat
-#   stat: path=/var/lib/aide/aide.db
-#   register: aide_db_stat
-
-
-# - name: Wazuh | 2528 | Ensure AIDE is installed | AIDE DB
-#   shell: mv /var/lib/aide/aide.db.new /var/lib/aide/aide.db
-#   args:
-#     executable: /bin/bash
-
-- name: Wazuh | 2528 | Ensure AIDE is installed | AIDE DB copy
+- name: Wazuh | 2528 | Ensure AIDE is installed | DB copy
   copy:
     src: /var/lib/aide/aide.db.new
     dest: /var/lib/aide/aide.db
@@ -94,7 +84,45 @@
     - aide_db_new_stat.stat.exists
     - aide_db_stat.stat.exists == False
 
-- name: Remove file (delete file)
+- name: Wazuh | 2528 | Ensure AIDE is installed | DB new delete
   file:
     path: /var/lib/aide/aide.db.new
     state: absent
+
+- name: Wazuh | 2529 | Ensure filesystem integrity is regularly checked
+  cron:
+    name: AIDE filesystem check
+    user: root
+    minute: "0"
+    hour: "5"
+    day: "*"
+    month: "*"
+    weekday: "*"
+    job: "/usr/bin/aide --config /etc/aide/aide.conf --check"
+
+- name: Wazuh | 2530 | Ensure permissions on bootloader config are configured
+  file:
+    path: "/boot/grub/grub.cfg"
+    mode: "og-rwx"
+    owner: root
+    group: root
+
+######## TO DO ########
+### - name: Wazuh | 2531 | Ensure bootloader password is set
+
+- name: Wazuh | 2532 | Ensure authentication required for single user mode
+  shell: grep "^root:[*\!]:" /etc/shadow
+  register: current_root_password
+  changed_when: false
+  failed_when: false
+  check_mode: no
+
+- name: Wazuh | 2532 | Ensure authentication required for single user mode | generate password
+  set_fact:
+    root_password: "{{ root_password_gen }}"
+
+# - name: change password
+#   ansible.builtin.user:
+#     name: "root"
+#     state: present
+#     password: "{{ root_password }}"
