@@ -211,9 +211,10 @@
     dest: /etc/default/grub
     backrefs: yes
     regexp: '^(GRUB_CMDLINE_LINUX=(?!.*ipv6.disable)\"[^\"]*)(\".*)'
-    replace: '\1 ipv6.disable=1\2'
+    line: '\1 ipv6.disable=1\2'
   notify: Wazuh | 2576 | update-grub
   when: ipv6_disable
+
 
 - name: Wazuh | 2579 | Ensure IP forwarding is disabled | ipv4
   sysctl:
