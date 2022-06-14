@@ -11,7 +11,7 @@
     # - ssh_hardening
     # - prometheus-node-exporter
     # - rapid7-agent
-    - wazuh-agent
+    # - wazuh-agent
     # - clamav-agent
     - my_hardening
   vars:
