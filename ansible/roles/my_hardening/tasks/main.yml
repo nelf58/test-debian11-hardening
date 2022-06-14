@@ -254,22 +254,6 @@
     comment: Accept new SSH connections.
   when: firewall_service == "iptables" 
 
-- name: Wazuh | 2601 | Ensure default deny firewall policy | IN allow lo traffic in
-  iptables:
-    chain: INPUT
-    in_interface: 'lo'
-    jump: ACCEPT
-    comment: Accept lo traffic.
-  when: firewall_service == "iptables"
-
-- name: Wazuh | 2601 | Ensure default deny firewall policy | OUT allow lo traffic
-  iptables:
-    chain: OUTPUT
-    out_interface: 'lo'
-    jump: ACCEPT
-    comment: Accept lo traffic.
-  when: firewall_service == "iptables"
-
 - name: Wazuh | 2601 | Ensure default deny firewall policy | IN related and established
   iptables:
     chain: INPUT
@@ -295,4 +279,75 @@
     - FORWARD
     - OUTPUT
     - FORWARD
-  when: firewall_service == "iptables" 
+  when: firewall_service == "iptables"
+
+- name: Wazuh | 2602 | Ensure loopback traffic is configured
+  iptables:
+    chain: INPUT
+    in_interface: 'lo'
+    jump: ACCEPT
+    comment: Accept lo traffic.
+  when: firewall_service == "iptables"
+
+- name: Wazuh | 2602 | Ensure loopback traffic is configured
+  iptables:
+    chain: OUTPUT
+    out_interface: 'lo'
+    jump: ACCEPT
+    comment: Accept lo traffic.
+  when: firewall_service == "iptables"
+
+- name: Wazuh | 2602 | Ensure loopback traffic is configured
+  iptables:
+    chain: INPUT
+    jump: DROP
+    source: "127.0.0.0/8"
+    comment: Drop non-lo loopback traffic
+  when: firewall_service == "iptables"
+  
+- name: Wazuh | 2603 | Ensure IPv6 default deny firewall policy
+  iptables:
+    ip_version: ipv6
+    policy: DROP
+    chain: "{{ item }}"
+  with_items:
+    - INPUT
+    - FORWARD
+    - OUTPUT
+    - FORWARD
+  when: 
+    - firewall_service == "iptables"
+    - ipv6_disable|bool == false
+
+- name: Wazuh | 2604 | Ensure IPv6 loopback traffic is configured
+  iptables:
+    ip_version: ipv6
+    chain: INPUT
+    in_interface: 'lo'
+    jump: ACCEPT
+    comment: Accept lo traffic.
+  when: 
+    - firewall_service == "iptables"
+    - ipv6_disable|bool == false
+
+- name: Wazuh | 2604 | Ensure IPv6 loopback traffic is configured
+  iptables:
+    ip_version: ipv6
+    chain: OUTPUT
+    out_interface: 'lo'
+    jump: ACCEPT
+    comment: Accept lo traffic.
+  when: 
+    - firewall_service == "iptables"
+    - ipv6_disable|bool == false
+
+- name: Wazuh | 2604 | Ensure IPv6 loopback traffic is configured
+  iptables:
+    ip_version: ipv6
+    chain: INPUT
+    jump: DROP
+    source: "::1"
+    comment: Drop non-lo loopback traffic
+  when: 
+    - firewall_service == "iptables"
+    - ipv6_disable|bool == false
