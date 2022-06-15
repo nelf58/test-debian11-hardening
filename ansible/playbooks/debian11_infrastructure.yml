@@ -11,9 +11,9 @@
     - ssh_hardening
     # - prometheus-node-exporter
     # - rapid7-agent
+    - my_hardening
     - wazuh-agent
     # - clamav-agent
-    - my_hardening
   vars:
     - ssh_client_password_login: true
     - ssh_server_password_login: true
