@@ -601,4 +601,4 @@
     line: "create 0640 root utmp"
     create: yes
 
-- name: Wazuh | 2642 | Ensure at/cron is restricted to authorized users
+# - name: Wazuh | 2642 | Ensure at/cron is restricted to authorized users
