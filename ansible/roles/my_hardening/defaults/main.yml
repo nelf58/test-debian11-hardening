@@ -5,3 +5,5 @@ root_password_gen: "{{ lookup('password', '/dev/null length=22 chars=ascii_lette
 ipv6_disable: true
 firewall_service: "iptables"
 ssh_port: 22
+use_auditd: true
+halt_on_full_audit_log: true

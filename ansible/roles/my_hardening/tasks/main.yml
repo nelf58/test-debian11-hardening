@@ -352,3 +352,252 @@
   when: 
     - firewall_service == "iptables"
     - ipv6_disable|bool == false
+
+- name: Wazuh | 2605 | Ensure auditd is installed
+  apt:
+    name: ["auditd", "audispd-plugins"]
+    state: present
+  when: use_auditd
+
+- name: Wazuh | 2607 | Ensure auditing for processes that start prior to auditd is enabled
+  lineinfile:
+    dest: /etc/default/grub
+    regexp: '^(GRUB_CMDLINE_LINUX=(?!.*audit=1)\"[^\"]*)(\".*)'
+    line: '\1 audit=1\2'
+    backrefs: yes
+  notify: Wazuh | 2576 | update-grub
+  when: use_auditd
+
+- name: Wazuh | 2610 | Ensure system is disabled when audit logs are full
+  lineinfile:
+    dest: /etc/audit/auditd.conf
+    regexp: "^\s*\t*action_mail_acct\s*\t*"
+    line: "action_mail_acct = root"
+
+- name: Wazuh | 2610 | Ensure system is disabled when audit logs are full | halt
+  lineinfile:
+    dest: /etc/audit/auditd.conf
+    regexp: "^\s*\t*admin_space_left_action\s*\t*"
+    line: "admin_space_left_action = halt"
+  when: halt_on_full_audit_log
+
+- name: Wazuh | 2610 | Ensure system is disabled when audit logs are full | email
+  lineinfile:
+    dest: /etc/audit/auditd.conf
+    regexp: "^\s*\t*admin_space_left_action\s*\t*"
+    line: "admin_space_left_action = halt"
+  when: not halt_on_full_audit_log
+
+- name: Wazuh | 2610 | Ensure system is disabled when audit logs are full
+  lineinfile:
+    dest: /etc/audit/auditd.conf
+    regexp: "^\s*\t*space_left_action\s*\t*"
+    line: "space_left_action = email"
+
+- name: Wazuh | 2611 | Ensure events that modify date and time information are collected
+  template:
+    src: audit/wazuh_2611_date_time.rules.j2
+    dest: /etc/audit/rules.d/wazuh_2611_date_time.rules
+    mode: 0400
+    owner: root
+    group: root
+
+- name: Wazuh | 2612 | Ensure events that modify user/group information are collected
+  template:
+    src: audit/wazuh_2612_user_group.rules.j2
+    dest: /etc/audit/rules.d/wazuh_2612_user_group.rules
+    mode: 0400
+    owner: root
+    group: root
+
+- name: Wazuh | 2613 | Ensure events that modify the system's network environment are collected
+  template:
+    src: audit/wazuh_2613_network.rules.j2
+    dest: /etc/audit/rules.d/wazuh_2613_network.rules
+    mode: 0400
+    owner: root
+    group: root
+
+- name: Wazuh | 2614 | Ensure events that modify the system's Mandatory Access Controls are collected
+  template:
+    src: audit/wazuh_2614_MAC.rules.j2
+    dest: /etc/audit/rules.d/wazuh_2614_MAC.rules
+    mode: 0400
+    owner: root
+    group: root
+
+- name: Wazuh | 2615 | Ensure login and logout events are collected
+  template:
+    src: audit/wazuh_2615_login_logout.rules.j2
+    dest: /etc/audit/rules.d/wazuh_2615_login_logout.rules
+    mode: 0400
+    owner: root
+    group: root
+
+- name: Wazuh | 2616 | Ensure session initiation information is collected
+  template:
+    src: audit/wazuh_2616_initiation.rules.j2
+    dest: /etc/audit/rules.d/wazuh_2616_initiation.rules
+    mode: 0400
+    owner: root
+    group: root
+
+- name: Wazuh | 2617 | Ensure discretionary access control permission modification events are collected
+  template:
+    src: audit/wazuh_2617_discretionary_access_control.rules.j2
+    dest: /etc/audit/rules.d/wazuh_2617_discretionary_access_control.rules
+    mode: 0400
+    owner: root
+    group: root
+
+- name: Wazuh | 2618 | Ensure unsuccessful unauthorized file access attempts are collected
+  template:
+    src: audit/wazuh_2618_unauthorized_file_access.rules.j2
+    dest: /etc/audit/rules.d/wazuh_2618_unauthorized_file_access.rules
+    mode: 0400
+    owner: root
+    group: root
+
+- name: Wazuh | 2619 | Ensure successful file system mounts are collected
+  template:
+    src: audit/wazuh_2619_successful_mounts.rules.j2
+    dest: /etc/audit/rules.d/wazuh_2619_successful_mounts.rules
+    mode: 0400
+    owner: root
+    group: root
+
+- name: Wazuh | 2620 | Ensure file deletion events by users are collected
+  template:
+    src: audit/wazuh_2620_file_deletion.rules.j2
+    dest: /etc/audit/rules.d/wazuh_2620_file_deletion.rules
+    mode: 0400
+    owner: root
+    group: root
+
+- name: Wazuh | 2621 | Ensure changes to system administration scope (sudoers) is collected
+  template:
+    src: audit/wazuh_2621_sudoers_scope.rules.j2
+    dest: /etc/audit/rules.d/wazuh_2621_sudoers_scope.rules
+    mode: 0400
+    owner: root
+    group: root
+
+- name: Wazuh | 2622 | Ensure system administrator actions (sudolog) are collected
+  template:
+    src: audit/wazuh_2622_sudoers_actions.rules.j2
+    dest: /etc/audit/rules.d/wazuh_2622_sudoers_actions.rules
+    mode: 0400
+    owner: root
+    group: root
+
+- name: Wazuh | 2623 | Ensure kernel module loading and unloading is collected
+  template:
+    src: audit/wazuh_2623_kernel.rules.j2
+    dest: /etc/audit/rules.d/wazuh_2623_kernel.rules
+    mode: 0400
+    owner: root
+    group: root
+
+- name: Wazuh | 2624 | Ensure the audit configuration is immutable
+  template:
+    src: audit/99-finalize.rules.j2
+    dest: /etc/audit/rules.d/99-finalize.rules.j2
+    mode: 0400
+    owner: root
+    group: root
+
+###- name: Wazuh | 2628 | Ensure rsyslog is configured to send logs to a remote log host
+#### all logs are sent to kibana
+
+- name: Wazuh | 2629 | Ensure remote rsyslog messages are only accepted on designated log hosts
+  lineinfile:
+    dest: /etc/rsyslog.conf
+    regexp: "^.*\$ModLoad imtcp.*"
+    line: "# $ModLoad imtcp"
+    create: yes
+    notify: rsyslog restart
+
+- name: Wazuh | 2629 | Ensure remote rsyslog messages are only accepted on designated log hosts
+  lineinfile:
+    dest: /etc/rsyslog.conf
+    regexp: "^.*\$InputTCPServerRun 514.*"
+    line: "# $InputTCPServerRun 514"
+    create: yes
+    notify: rsyslog restart
+
+- name: Wazuh | 2630 | Ensure journald is configured to send logs to rsyslog
+  lineinfile:
+    dest: /etc/systemd/journald.conf
+    regexp: "^.*ForwardToSyslog.*"
+    line: "ForwardToSyslog=yes"
+    create: yes
+
+- name: Wazuh | 2631 | Ensure journald is configured to compress large log files
+  lineinfile:
+    dest: /etc/systemd/journald.conf
+    regexp: "^.*Compress\s*\t*=.*"
+    line: "Compress=yes"
+    create: yes
+
+- name: Wazuh | 2632 | Ensure journald is configured to write logfiles to persistent disk
+  lineinfile:
+    dest: /etc/systemd/journald.conf
+    regexp: "^.*Storage\s*\t*=.*"
+    line: "Storage=persistent"
+    create: yes
+
+#### shell variant
+# - name: Wazuh | 2633 | Ensure permissions on all logfiles are configured
+#   shell: find /var/log -type f -exec chmod g-wx,o-rwx "{}" + -o -type d -exec chmod g-w,o-rwx "{}" +
+#   register: log_files_dirs_changed
+#   changed_when: log_files_dirs_changed.stdout_lines | length > 0
+
+#### lazy non-idempotent variant
+# - name: Wazuh | 2633 | Ensure permissions on all logfiles are configured
+#   file:
+#     path: /var/log
+#     state: directory
+#     recurse: yes
+#     mode: g-wx,o-rwx
+
+# - name: Wazuh | 2633 | Ensure permissions on all logfiles are configured
+#   file:
+#     path: /var/log
+#     state: directory
+#     recurse: yes
+#     mode: g+X
+
+- name: Wazuh | 2633 | Ensure permissions on all logfiles are configured | find files
+  find:
+    paths: /var/log
+    recurse: yes
+    file_type: file
+  register: files_in_var_log
+
+- name: Wazuh | 2633 | Ensure permissions on all logfiles are configured | set files permissions
+  file:
+    dest: /var/log
+    mode: "g-wx,o-rwx"
+  loop: '{{ files_in_var_log.files }}'
+
+- name: Wazuh | 2633 | Ensure permissions on all logfiles are configured | find dirs
+  find:
+    paths: /var/log
+    recurse: yes
+    file_type: directory
+  register: directories_on_var_log
+
+- name: Wazuh | 2633 | Ensure permissions on all logfiles are configured | set dirs permissions
+  file:
+    dest: '{{ item.path }}'
+    mode: "g-w,o-rwx"
+  loop: '{{ directories_on_var_log.files }}'
+
+- name: Wazuh | 2634 | Ensure logrotate assigns appropriate permissions
+  lineinfile:
+    dest: /etc/logrotate.conf
+    regexp: "^\s*\t*#*\s*\t*create.*"
+    line: "create 0640 root utmp"
+    create: yes
+
+- name: Wazuh | 2642 | Ensure at/cron is restricted to authorized users
