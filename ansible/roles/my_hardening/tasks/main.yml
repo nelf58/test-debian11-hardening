@@ -1,571 +1,571 @@
 ---
 
-- name: Wazuh | create /etc/modprobe.d/ for modprobe conf files
-  file:
-    path: /etc/modprobe.d
-    state: directory
+# - name: Wazuh | create /etc/modprobe.d/ for modprobe conf files
+#   file:
+#     path: /etc/modprobe.d
+#     state: directory
 
-- name: Wazuh | 2506 | Ensure mounting of FAT filesystems is disabled | modprobe
-  modprobe:
-    name: vfat
-    state: absent
-  when: disable_vfat
+# - name: Wazuh | 2506 | Ensure mounting of FAT filesystems is disabled | modprobe
+#   modprobe:
+#     name: vfat
+#     state: absent
+#   when: disable_vfat
 
-- name: Wazuh | 2506 | Ensure mounting of FAT filesystems is disabled | /etc/modprobe.d/
-  lineinfile:
-    dest: /etc/modprobe.d/vfat.conf
-    regexp: "^.*install vfat.*$"
-    line: "install vfat /bin/true"
-    create: true
-  when: disable_vfat
+# - name: Wazuh | 2506 | Ensure mounting of FAT filesystems is disabled | /etc/modprobe.d/
+#   lineinfile:
+#     dest: /etc/modprobe.d/vfat.conf
+#     regexp: "^.*install vfat.*$"
+#     line: "install vfat /bin/true"
+#     create: true
+#   when: disable_vfat
 
-- name: Wazuh | 2524 | Disable USB Storage | /etc/modprobe.d/
-  lineinfile:
-    dest: /etc/modprobe.d/usb_storage.conf
-    regexp: "^.*install usb-storage.*$"
-    line: "install usb-storage /bin/true"
-    create: true
+# - name: Wazuh | 2524 | Disable USB Storage | /etc/modprobe.d/
+#   lineinfile:
+#     dest: /etc/modprobe.d/usb_storage.conf
+#     regexp: "^.*install usb-storage.*$"
+#     line: "install usb-storage /bin/true"
+#     create: true
 
-- name: Wazuh | 2524 | Disable USB Storage | modprobe
-  modprobe:
-    name: usb-storage
-    state: absent
+# - name: Wazuh | 2524 | Disable USB Storage | modprobe
+#   modprobe:
+#     name: usb-storage
+#     state: absent
 
-- name: Wazuh | create /etc/sudoers.d/ for sudo conf files
-  file:
-    path: /etc/sudoers.d
-    state: directory
+# - name: Wazuh | create /etc/sudoers.d/ for sudo conf files
+#   file:
+#     path: /etc/sudoers.d
+#     state: directory
 
-- name: Wazuh | 2526 | Ensure sudo commands use pty
-  lineinfile:
-    dest: /etc/sudoers.d/pty
-    regexp: "^.*Defaults use_pty.*"
-    line: "Defaults use_pty"
-    validate: "visudo -cf %s"
-    create: yes
+# - name: Wazuh | 2526 | Ensure sudo commands use pty
+#   lineinfile:
+#     dest: /etc/sudoers.d/pty
+#     regexp: "^.*Defaults use_pty.*"
+#     line: "Defaults use_pty"
+#     validate: "visudo -cf %s"
+#     create: yes
 
-- name: Wazuh | 2527 | Ensure sudo log file exists
-  lineinfile:
-    dest: /etc/sudoers.d/sudo_logs
-    regexp: "^.*Defaults logfile.*"
-    line: 'Defaults logfile="/var/log/sudo.log"'
-    validate: "visudo -cf %s"
-    create: yes
-    state: present
+# - name: Wazuh | 2527 | Ensure sudo log file exists
+#   lineinfile:
+#     dest: /etc/sudoers.d/sudo_logs
+#     regexp: "^.*Defaults logfile.*"
+#     line: 'Defaults logfile="/var/log/sudo.log"'
+#     validate: "visudo -cf %s"
+#     create: yes
+#     state: present
 
-- name: Wazuh | 2528 | Ensure AIDE is installed | apt
-  apt:
-    pkg:
-    - aide
-    - aide-common
+# - name: Wazuh | 2528 | Ensure AIDE is installed | apt
+#   apt:
+#     pkg:
+#     - aide
+#     - aide-common
 
-- name: Wazuh | 2528 | Ensure AIDE is installed | DB stat
-  stat: path=/var/lib/aide/aide.db
-  register: aide_db_stat
+# - name: Wazuh | 2528 | Ensure AIDE is installed | DB stat
+#   stat: path=/var/lib/aide/aide.db
+#   register: aide_db_stat
 
-- name: Wazuh | 2528 | Ensure AIDE is installed | init
-  shell: aideinit
-  args:
-    executable: /bin/bash
-  when: aide_db_stat.stat.exists == False
+# - name: Wazuh | 2528 | Ensure AIDE is installed | init
+#   shell: aideinit
+#   args:
+#     executable: /bin/bash
+#   when: aide_db_stat.stat.exists == False
 
-- name: Wazuh | 2528 | Ensure AIDE is installed | DB new stat
-  stat: path=/var/lib/aide/aide.db.new
-  register: aide_db_new_stat
+# - name: Wazuh | 2528 | Ensure AIDE is installed | DB new stat
+#   stat: path=/var/lib/aide/aide.db.new
+#   register: aide_db_new_stat
 
-- name: Wazuh | 2528 | Ensure AIDE is installed | DB copy
-  copy:
-    src: /var/lib/aide/aide.db.new
-    dest: /var/lib/aide/aide.db
-  when: 
-    - aide_db_new_stat.stat.exists
-    - aide_db_stat.stat.exists == False
+# - name: Wazuh | 2528 | Ensure AIDE is installed | DB copy
+#   copy:
+#     src: /var/lib/aide/aide.db.new
+#     dest: /var/lib/aide/aide.db
+#   when: 
+#     - aide_db_new_stat.stat.exists
+#     - aide_db_stat.stat.exists == False
 
-- name: Wazuh | 2528 | Ensure AIDE is installed | DB new delete
-  file:
-    path: /var/lib/aide/aide.db.new
-    state: absent
+# - name: Wazuh | 2528 | Ensure AIDE is installed | DB new delete
+#   file:
+#     path: /var/lib/aide/aide.db.new
+#     state: absent
 
-- name: Wazuh | 2529 | Ensure filesystem integrity is regularly checked
-  cron:
-    name: AIDE filesystem check
-    user: root
-    minute: "0"
-    hour: "5"
-    day: "*"
-    month: "*"
-    weekday: "*"
-    job: "/usr/bin/aide --config /etc/aide/aide.conf --check"
+# - name: Wazuh | 2529 | Ensure filesystem integrity is regularly checked
+#   cron:
+#     name: AIDE filesystem check
+#     user: root
+#     minute: "0"
+#     hour: "5"
+#     day: "*"
+#     month: "*"
+#     weekday: "*"
+#     job: "/usr/bin/aide --config /etc/aide/aide.conf --check"
 
-- name: Wazuh | 2530 | Ensure permissions on bootloader config are configured
-  file:
-    path: "/boot/grub/grub.cfg"
-    mode: 0400
-    owner: root
-    group: root
+# - name: Wazuh | 2530 | Ensure permissions on bootloader config are configured
+#   file:
+#     path: "/boot/grub/grub.cfg"
+#     mode: 0400
+#     owner: root
+#     group: root
 
-######## TO DO ########
-### - name: Wazuh | 2531 | Ensure bootloader password is set
+# ######## TO DO ########
+# ### - name: Wazuh | 2531 | Ensure bootloader password is set
 
-- name: Wazuh | 2532 | Ensure authentication required for single user mode
-  shell: grep "^root:[*\!\:]" /etc/shadow
-  register: root_password_check
-  changed_when: false
-  failed_when: false
-  check_mode: no
+# - name: Wazuh | 2532 | Ensure authentication required for single user mode
+#   shell: grep "^root:[*\!\:]" /etc/shadow
+#   register: root_password_check
+#   changed_when: false
+#   failed_when: false
+#   check_mode: no
 
-- name: Wazuh | 2532 | Ensure authentication required for single user mode | generate password
-  set_fact:
-    root_password: "{{ root_password_gen }}"
-  when: 
-    - root_password_check.rc == 0
+# - name: Wazuh | 2532 | Ensure authentication required for single user mode | generate password
+#   set_fact:
+#     root_password: "{{ root_password_gen }}"
+#   when: 
+#     - root_password_check.rc == 0
 
-- name:  Wazuh | 2532 | Ensure authentication required for single user mode | set root password
-  user:
-    name: "root"
-    state: present
-    password: "{{ root_password | password_hash('sha512') }}"
-  when: 
-    - root_password_check.rc == 0
+# - name:  Wazuh | 2532 | Ensure authentication required for single user mode | set root password
+#   user:
+#     name: "root"
+#     state: present
+#     password: "{{ root_password | password_hash('sha512') }}"
+#   when: 
+#     - root_password_check.rc == 0
 
-- name: Wazuh | 2536 | Ensure core dumps are restricted | limits
-  lineinfile:
-    dest: /etc/security/limits.d/core.conf
-    line: "*               hard    core            0"
-    regexp: '^\s*(#)?\*\s+hard\s+core\s+\d+'
-    create: true
+# - name: Wazuh | 2536 | Ensure core dumps are restricted | limits
+#   lineinfile:
+#     dest: /etc/security/limits.d/core.conf
+#     line: "*               hard    core            0"
+#     regexp: '^\s*(#)?\*\s+hard\s+core\s+\d+'
+#     create: true
 
-- name: Wazuh | 2536 | Ensure core dumps are restricted
-  sysctl:
-    name: fs.suid_dumpable
-    value: "0"
-    sysctl_file: /etc/sysctl.d/fs-suid_dumpable.conf | sysctl
-    state: present
-    reload: true
-    sysctl_set: true
+# - name: Wazuh | 2536 | Ensure core dumps are restricted
+#   sysctl:
+#     name: fs.suid_dumpable
+#     value: "0"
+#     sysctl_file: /etc/sysctl.d/fs-suid_dumpable.conf | sysctl
+#     state: present
+#     reload: true
+#     sysctl_set: true
 
-- name: Wazuh | 2536 | Ensure core dumps are restricted | apt
-  apt:
-    name: systemd-coredump
-    state: present
+# - name: Wazuh | 2536 | Ensure core dumps are restricted | apt
+#   apt:
+#     name: systemd-coredump
+#     state: present
 
-- name: Wazuh | 2536 | Ensure core dumps are restricted | daemon_reload
-  systemd:
-    daemon_reload: yes
+# - name: Wazuh | 2536 | Ensure core dumps are restricted | daemon_reload
+#   systemd:
+#     daemon_reload: yes
 
-- name: Wazuh | 2541 | Ensure message of the day is configured properly
-  template:
-    src: motd.j2
-    dest: /etc/motd
-    mode: 0644
-    owner: root
-    group: root
+# - name: Wazuh | 2541 | Ensure message of the day is configured properly
+#   template:
+#     src: motd.j2
+#     dest: /etc/motd
+#     mode: 0644
+#     owner: root
+#     group: root
 
-- name: Wazuh | 2542 | Ensure local login warning banner is configured properly 
-  template:
-    src: issue.j2
-    dest: /etc/issue
-    owner: root
-    group: root
-    mode: 0644
+# - name: Wazuh | 2542 | Ensure local login warning banner is configured properly 
+#   template:
+#     src: issue.j2
+#     dest: /etc/issue
+#     owner: root
+#     group: root
+#     mode: 0644
 
-- name: Wazuh | 2543 | Ensure remote login warning banner is configured properly
-  template:
-    src: issue.net.j2
-    dest: /etc/issue.net
-    owner: root
-    group: root
-    mode: 0644
+# - name: Wazuh | 2543 | Ensure remote login warning banner is configured properly
+#   template:
+#     src: issue.net.j2
+#     dest: /etc/issue.net
+#     owner: root
+#     group: root
+#     mode: 0644
 
-- name: Wazuh | 2548 | Ensure updates, patches, and additional security software are installed
-  apt:
-    upgrade: yes
-    update_cache: yes
+# - name: Wazuh | 2548 | Ensure updates, patches, and additional security software are installed
+#   apt:
+#     upgrade: yes
+#     update_cache: yes
 
-- name: Wazuh | 2552 | Ensure systemd-timesyncd is configured | apt
-  apt:
-    pkg:
-    - systemd-timesyncd
+# - name: Wazuh | 2552 | Ensure systemd-timesyncd is configured | apt
+#   apt:
+#     pkg:
+#     - systemd-timesyncd
 
-- name: Wazuh | 2552 | Ensure systemd-timesyncd is configured | config
-  lineinfile:
-    dest: /etc/sysctl.conf
-    regexp: "{{ item.regexp }}"
-    line: "{{ item.line }}"
-  loop:
-    - { regexp: '^\s*#*\s*NTP\s*=.*', line: 'NTP=0.debian.pool.ntp.org 1.debian.pool.ntp.org' }
-    - { regexp: '^\s*#*\s*FallbackNTP\s*=.*', line: 'FallbackNTP=2.debian.pool.ntp.org 3.debian.pool.ntp.org' }
-    - { regexp: '^\s*#*\s*RootDistanceMax\s*=.*', line: 'RootDistanceMax=1' }
-  notify: Restart systemd-timesyncd
+# - name: Wazuh | 2552 | Ensure systemd-timesyncd is configured | config
+#   lineinfile:
+#     dest: /etc/sysctl.conf
+#     regexp: "{{ item.regexp }}"
+#     line: "{{ item.line }}"
+#   loop:
+#     - { regexp: '^\s*#*\s*NTP\s*=.*', line: 'NTP=0.debian.pool.ntp.org 1.debian.pool.ntp.org' }
+#     - { regexp: '^\s*#*\s*FallbackNTP\s*=.*', line: 'FallbackNTP=2.debian.pool.ntp.org 3.debian.pool.ntp.org' }
+#     - { regexp: '^\s*#*\s*RootDistanceMax\s*=.*', line: 'RootDistanceMax=1' }
+#   notify: Restart systemd-timesyncd
 
-- name: Wazuh | 2552 | Ensure systemd-timesyncd is configured | service
-  service:
-    name: systemd-timesyncd
-    enabled: yes
-    state: started
+# - name: Wazuh | 2552 | Ensure systemd-timesyncd is configured | service
+#   service:
+#     name: systemd-timesyncd
+#     enabled: yes
+#     state: started
 
-################## network ##################
+# ################## network ##################
 
-- name: Wazuh | 2576 | Disable IPv6
-  lineinfile:
-    dest: /etc/default/grub
-    backrefs: yes
-    regexp: '^(GRUB_CMDLINE_LINUX=(?!.*ipv6.disable)\"[^\"]*)(\".*)'
-    line: '\1 ipv6.disable=1\2'
-  notify: Wazuh | 2576 | update-grub
-  when: ipv6_disable
+# - name: Wazuh | 2576 | Disable IPv6
+#   lineinfile:
+#     dest: /etc/default/grub
+#     backrefs: yes
+#     regexp: '^(GRUB_CMDLINE_LINUX=(?!.*ipv6.disable)\"[^\"]*)(\".*)'
+#     line: '\1 ipv6.disable=1\2'
+#   notify: Wazuh | 2576 | update-grub
+#   when: ipv6_disable
 
 
-- name: Wazuh | 2579 | Ensure IP forwarding is disabled | ipv4
-  sysctl:
-    name: net.ipv4.ip_forward
-    value: "0"
-    sysctl_file: /etc/sysctl.d/wazuh-network.conf
-    reload: true
-    state: present
-  notify:
-    - Wazuh | 2579 | ipv4 route flush
+# - name: Wazuh | 2579 | Ensure IP forwarding is disabled | ipv4
+#   sysctl:
+#     name: net.ipv4.ip_forward
+#     value: "0"
+#     sysctl_file: /etc/sysctl.d/wazuh-network.conf
+#     reload: true
+#     state: present
+#   notify:
+#     - Wazuh | 2579 | ipv4 route flush
 
-- name: Wazuh | 2579 | Ensure IP forwarding is disabled | ipv6
-  sysctl:
-    name: net.ipv6.conf.all.forwarding
-    value: "0"
-    sysctl_file: /etc/sysctl.d/wazuh-network.conf
-    reload: true
-    state: present
-  notify:
-    - Wazuh | 2579 | ipv6 route flush
-  when: ipv6_disable
+# - name: Wazuh | 2579 | Ensure IP forwarding is disabled | ipv6
+#   sysctl:
+#     name: net.ipv6.conf.all.forwarding
+#     value: "0"
+#     sysctl_file: /etc/sysctl.d/wazuh-network.conf
+#     reload: true
+#     state: present
+#   notify:
+#     - Wazuh | 2579 | ipv6 route flush
+#   when: ipv6_disable
 
-- name: Wazuh | 2600 | Ensure nftables service is enabled | nftables
-  service:
-    name: nftables
-    enabled: true
-    state: started
-  when: firewall_service == "nftables"
+# - name: Wazuh | 2600 | Ensure nftables service is enabled | nftables
+#   service:
+#     name: nftables
+#     enabled: true
+#     state: started
+#   when: firewall_service == "nftables"
 
-- name: Wazuh | 2601 | Ensure default deny firewall policy | IN allow SSH
-  ansible.builtin.iptables:
-    chain: INPUT
-    protocol: tcp
-    destination_port: '{{ ssh_port }}'
-    ctstate: NEW
-    syn: match
-    jump: ACCEPT
-    comment: Accept new SSH connections.
-  when: firewall_service == "iptables" 
+# - name: Wazuh | 2601 | Ensure default deny firewall policy | IN allow SSH
+#   ansible.builtin.iptables:
+#     chain: INPUT
+#     protocol: tcp
+#     destination_port: '{{ ssh_port }}'
+#     ctstate: NEW
+#     syn: match
+#     jump: ACCEPT
+#     comment: Accept new SSH connections.
+#   when: firewall_service == "iptables" 
 
-- name: Wazuh | 2601 | Ensure default deny firewall policy | IN related and established
-  iptables:
-    chain: INPUT
-    ctstate: ESTABLISHED,RELATED
-    jump: ACCEPT
-    comment: Accept related and established.
-  when: firewall_service == "iptables"
+# - name: Wazuh | 2601 | Ensure default deny firewall policy | IN related and established
+#   iptables:
+#     chain: INPUT
+#     ctstate: ESTABLISHED,RELATED
+#     jump: ACCEPT
+#     comment: Accept related and established.
+#   when: firewall_service == "iptables"
 
-- name: Wazuh | 2601 | Ensure default deny firewall policy | OUT established
-  iptables:
-    chain: OUTPUT
-    ctstate: ESTABLISHED
-    jump: ACCEPT
-    comment: Accept established
-  when: firewall_service == "iptables"
+# - name: Wazuh | 2601 | Ensure default deny firewall policy | OUT established
+#   iptables:
+#     chain: OUTPUT
+#     ctstate: ESTABLISHED
+#     jump: ACCEPT
+#     comment: Accept established
+#   when: firewall_service == "iptables"
 
-- name: Wazuh | 2601 | Ensure default deny firewall policy | iptables
-  iptables:
-    policy: DROP
-    chain: "{{ item }}"
-  with_items:
-    - INPUT
-    - FORWARD
-    - OUTPUT
-    - FORWARD
-  when: firewall_service == "iptables"
+# - name: Wazuh | 2601 | Ensure default deny firewall policy | iptables
+#   iptables:
+#     policy: DROP
+#     chain: "{{ item }}"
+#   with_items:
+#     - INPUT
+#     - FORWARD
+#     - OUTPUT
+#     - FORWARD
+#   when: firewall_service == "iptables"
 
-- name: Wazuh | 2602 | Ensure loopback traffic is configured
-  iptables:
-    chain: INPUT
-    in_interface: 'lo'
-    jump: ACCEPT
-    comment: Accept lo traffic.
-  when: firewall_service == "iptables"
+# - name: Wazuh | 2602 | Ensure loopback traffic is configured
+#   iptables:
+#     chain: INPUT
+#     in_interface: 'lo'
+#     jump: ACCEPT
+#     comment: Accept lo traffic.
+#   when: firewall_service == "iptables"
 
-- name: Wazuh | 2602 | Ensure loopback traffic is configured
-  iptables:
-    chain: OUTPUT
-    out_interface: 'lo'
-    jump: ACCEPT
-    comment: Accept lo traffic.
-  when: firewall_service == "iptables"
+# - name: Wazuh | 2602 | Ensure loopback traffic is configured
+#   iptables:
+#     chain: OUTPUT
+#     out_interface: 'lo'
+#     jump: ACCEPT
+#     comment: Accept lo traffic.
+#   when: firewall_service == "iptables"
 
-- name: Wazuh | 2602 | Ensure loopback traffic is configured
-  iptables:
-    chain: INPUT
-    jump: DROP
-    source: "127.0.0.0/8"
-    comment: Drop non-lo loopback traffic
-  when: firewall_service == "iptables"
+# - name: Wazuh | 2602 | Ensure loopback traffic is configured
+#   iptables:
+#     chain: INPUT
+#     jump: DROP
+#     source: "127.0.0.0/8"
+#     comment: Drop non-lo loopback traffic
+#   when: firewall_service == "iptables"
   
-- name: Wazuh | 2603 | Ensure IPv6 default deny firewall policy
-  iptables:
-    ip_version: ipv6
-    policy: DROP
-    chain: "{{ item }}"
-  with_items:
-    - INPUT
-    - FORWARD
-    - OUTPUT
-    - FORWARD
-  when: 
-    - firewall_service == "iptables"
-    - ipv6_disable|bool == false
+# - name: Wazuh | 2603 | Ensure IPv6 default deny firewall policy
+#   iptables:
+#     ip_version: ipv6
+#     policy: DROP
+#     chain: "{{ item }}"
+#   with_items:
+#     - INPUT
+#     - FORWARD
+#     - OUTPUT
+#     - FORWARD
+#   when: 
+#     - firewall_service == "iptables"
+#     - ipv6_disable|bool == false
 
-- name: Wazuh | 2604 | Ensure IPv6 loopback traffic is configured
-  iptables:
-    ip_version: ipv6
-    chain: INPUT
-    in_interface: 'lo'
-    jump: ACCEPT
-    comment: Accept lo traffic.
-  when: 
-    - firewall_service == "iptables"
-    - ipv6_disable|bool == false
+# - name: Wazuh | 2604 | Ensure IPv6 loopback traffic is configured
+#   iptables:
+#     ip_version: ipv6
+#     chain: INPUT
+#     in_interface: 'lo'
+#     jump: ACCEPT
+#     comment: Accept lo traffic.
+#   when: 
+#     - firewall_service == "iptables"
+#     - ipv6_disable|bool == false
 
-- name: Wazuh | 2604 | Ensure IPv6 loopback traffic is configured
-  iptables:
-    ip_version: ipv6
-    chain: OUTPUT
-    out_interface: 'lo'
-    jump: ACCEPT
-    comment: Accept lo traffic.
-  when: 
-    - firewall_service == "iptables"
-    - ipv6_disable|bool == false
+# - name: Wazuh | 2604 | Ensure IPv6 loopback traffic is configured
+#   iptables:
+#     ip_version: ipv6
+#     chain: OUTPUT
+#     out_interface: 'lo'
+#     jump: ACCEPT
+#     comment: Accept lo traffic.
+#   when: 
+#     - firewall_service == "iptables"
+#     - ipv6_disable|bool == false
 
-- name: Wazuh | 2604 | Ensure IPv6 loopback traffic is configured
-  iptables:
-    ip_version: ipv6
-    chain: INPUT
-    jump: DROP
-    source: "::1"
-    comment: Drop non-lo loopback traffic
-  when: 
-    - firewall_service == "iptables"
-    - ipv6_disable|bool == false
+# - name: Wazuh | 2604 | Ensure IPv6 loopback traffic is configured
+#   iptables:
+#     ip_version: ipv6
+#     chain: INPUT
+#     jump: DROP
+#     source: "::1"
+#     comment: Drop non-lo loopback traffic
+#   when: 
+#     - firewall_service == "iptables"
+#     - ipv6_disable|bool == false
 
-- name: Wazuh | 2605 | Ensure auditd is installed
-  apt:
-    name: ["auditd", "audispd-plugins"]
-    state: present
-  when: use_auditd
+# - name: Wazuh | 2605 | Ensure auditd is installed
+#   apt:
+#     name: ["auditd", "audispd-plugins"]
+#     state: present
+#   when: use_auditd
 
-- name: Wazuh | 2607 | Ensure auditing for processes that start prior to auditd is enabled
-  lineinfile:
-    dest: /etc/default/grub
-    regexp: '^(GRUB_CMDLINE_LINUX=(?!.*audit=1)\"[^\"]*)(\".*)'
-    line: '\1 audit=1\2'
-    backrefs: yes
-  notify: Wazuh | 2576 | update-grub
-  when: use_auditd
+# - name: Wazuh | 2607 | Ensure auditing for processes that start prior to auditd is enabled
+#   lineinfile:
+#     dest: /etc/default/grub
+#     regexp: '^(GRUB_CMDLINE_LINUX=(?!.*audit=1)\"[^\"]*)(\".*)'
+#     line: '\1 audit=1\2'
+#     backrefs: yes
+#   notify: Wazuh | 2576 | update-grub
+#   when: use_auditd
 
-- name: Wazuh | 2610 | Ensure system is disabled when audit logs are full
-  lineinfile:
-    dest: /etc/audit/auditd.conf
-    regexp: "^\s*\t*action_mail_acct\s*\t*"
-    line: "action_mail_acct = root"
+# - name: Wazuh | 2610 | Ensure system is disabled when audit logs are full
+#   lineinfile:
+#     dest: /etc/audit/auditd.conf
+#     regexp: "^\s*\t*action_mail_acct\s*\t*"
+#     line: "action_mail_acct = root"
 
-- name: Wazuh | 2610 | Ensure system is disabled when audit logs are full | halt
-  lineinfile:
-    dest: /etc/audit/auditd.conf
-    regexp: "^\s*\t*admin_space_left_action\s*\t*"
-    line: "admin_space_left_action = halt"
-  when: halt_on_full_audit_log
+# - name: Wazuh | 2610 | Ensure system is disabled when audit logs are full | halt
+#   lineinfile:
+#     dest: /etc/audit/auditd.conf
+#     regexp: "^\s*\t*admin_space_left_action\s*\t*"
+#     line: "admin_space_left_action = halt"
+#   when: halt_on_full_audit_log
 
-- name: Wazuh | 2610 | Ensure system is disabled when audit logs are full | email
-  lineinfile:
-    dest: /etc/audit/auditd.conf
-    regexp: "^\s*\t*admin_space_left_action\s*\t*"
-    line: "admin_space_left_action = halt"
-  when: not halt_on_full_audit_log
+# - name: Wazuh | 2610 | Ensure system is disabled when audit logs are full | email
+#   lineinfile:
+#     dest: /etc/audit/auditd.conf
+#     regexp: "^\s*\t*admin_space_left_action\s*\t*"
+#     line: "admin_space_left_action = halt"
+#   when: not halt_on_full_audit_log
 
-- name: Wazuh | 2610 | Ensure system is disabled when audit logs are full
-  lineinfile:
-    dest: /etc/audit/auditd.conf
-    regexp: "^\s*\t*space_left_action\s*\t*"
-    line: "space_left_action = email"
+# - name: Wazuh | 2610 | Ensure system is disabled when audit logs are full
+#   lineinfile:
+#     dest: /etc/audit/auditd.conf
+#     regexp: "^\s*\t*space_left_action\s*\t*"
+#     line: "space_left_action = email"
 
-- name: Wazuh | 2611 | Ensure events that modify date and time information are collected
-  template:
-    src: audit/wazuh_2611_date_time.rules.j2
-    dest: /etc/audit/rules.d/wazuh_2611_date_time.rules
-    mode: 0400
-    owner: root
-    group: root
+# - name: Wazuh | 2611 | Ensure events that modify date and time information are collected
+#   template:
+#     src: audit/wazuh_2611_date_time.rules.j2
+#     dest: /etc/audit/rules.d/wazuh_2611_date_time.rules
+#     mode: 0400
+#     owner: root
+#     group: root
 
-- name: Wazuh | 2612 | Ensure events that modify user/group information are collected
-  template:
-    src: audit/wazuh_2612_user_group.rules.j2
-    dest: /etc/audit/rules.d/wazuh_2612_user_group.rules
-    mode: 0400
-    owner: root
-    group: root
+# - name: Wazuh | 2612 | Ensure events that modify user/group information are collected
+#   template:
+#     src: audit/wazuh_2612_user_group.rules.j2
+#     dest: /etc/audit/rules.d/wazuh_2612_user_group.rules
+#     mode: 0400
+#     owner: root
+#     group: root
 
-- name: Wazuh | 2613 | Ensure events that modify the system's network environment are collected
-  template:
-    src: audit/wazuh_2613_network.rules.j2
-    dest: /etc/audit/rules.d/wazuh_2613_network.rules
-    mode: 0400
-    owner: root
-    group: root
+# - name: Wazuh | 2613 | Ensure events that modify the system's network environment are collected
+#   template:
+#     src: audit/wazuh_2613_network.rules.j2
+#     dest: /etc/audit/rules.d/wazuh_2613_network.rules
+#     mode: 0400
+#     owner: root
+#     group: root
 
-- name: Wazuh | 2614 | Ensure events that modify the system's Mandatory Access Controls are collected
-  template:
-    src: audit/wazuh_2614_MAC.rules.j2
-    dest: /etc/audit/rules.d/wazuh_2614_MAC.rules
-    mode: 0400
-    owner: root
-    group: root
+# - name: Wazuh | 2614 | Ensure events that modify the system's Mandatory Access Controls are collected
+#   template:
+#     src: audit/wazuh_2614_MAC.rules.j2
+#     dest: /etc/audit/rules.d/wazuh_2614_MAC.rules
+#     mode: 0400
+#     owner: root
+#     group: root
 
-- name: Wazuh | 2615 | Ensure login and logout events are collected
-  template:
-    src: audit/wazuh_2615_login_logout.rules.j2
-    dest: /etc/audit/rules.d/wazuh_2615_login_logout.rules
-    mode: 0400
-    owner: root
-    group: root
+# - name: Wazuh | 2615 | Ensure login and logout events are collected
+#   template:
+#     src: audit/wazuh_2615_login_logout.rules.j2
+#     dest: /etc/audit/rules.d/wazuh_2615_login_logout.rules
+#     mode: 0400
+#     owner: root
+#     group: root
 
-- name: Wazuh | 2616 | Ensure session initiation information is collected
-  template:
-    src: audit/wazuh_2616_initiation.rules.j2
-    dest: /etc/audit/rules.d/wazuh_2616_initiation.rules
-    mode: 0400
-    owner: root
-    group: root
+# - name: Wazuh | 2616 | Ensure session initiation information is collected
+#   template:
+#     src: audit/wazuh_2616_initiation.rules.j2
+#     dest: /etc/audit/rules.d/wazuh_2616_initiation.rules
+#     mode: 0400
+#     owner: root
+#     group: root
 
-- name: Wazuh | 2617 | Ensure discretionary access control permission modification events are collected
-  template:
-    src: audit/wazuh_2617_discretionary_access_control.rules.j2
-    dest: /etc/audit/rules.d/wazuh_2617_discretionary_access_control.rules
-    mode: 0400
-    owner: root
-    group: root
+# - name: Wazuh | 2617 | Ensure discretionary access control permission modification events are collected
+#   template:
+#     src: audit/wazuh_2617_discretionary_access_control.rules.j2
+#     dest: /etc/audit/rules.d/wazuh_2617_discretionary_access_control.rules
+#     mode: 0400
+#     owner: root
+#     group: root
 
-- name: Wazuh | 2618 | Ensure unsuccessful unauthorized file access attempts are collected
-  template:
-    src: audit/wazuh_2618_unauthorized_file_access.rules.j2
-    dest: /etc/audit/rules.d/wazuh_2618_unauthorized_file_access.rules
-    mode: 0400
-    owner: root
-    group: root
+# - name: Wazuh | 2618 | Ensure unsuccessful unauthorized file access attempts are collected
+#   template:
+#     src: audit/wazuh_2618_unauthorized_file_access.rules.j2
+#     dest: /etc/audit/rules.d/wazuh_2618_unauthorized_file_access.rules
+#     mode: 0400
+#     owner: root
+#     group: root
 
-- name: Wazuh | 2619 | Ensure successful file system mounts are collected
-  template:
-    src: audit/wazuh_2619_successful_mounts.rules.j2
-    dest: /etc/audit/rules.d/wazuh_2619_successful_mounts.rules
-    mode: 0400
-    owner: root
-    group: root
+# - name: Wazuh | 2619 | Ensure successful file system mounts are collected
+#   template:
+#     src: audit/wazuh_2619_successful_mounts.rules.j2
+#     dest: /etc/audit/rules.d/wazuh_2619_successful_mounts.rules
+#     mode: 0400
+#     owner: root
+#     group: root
 
-- name: Wazuh | 2620 | Ensure file deletion events by users are collected
-  template:
-    src: audit/wazuh_2620_file_deletion.rules.j2
-    dest: /etc/audit/rules.d/wazuh_2620_file_deletion.rules
-    mode: 0400
-    owner: root
-    group: root
+# - name: Wazuh | 2620 | Ensure file deletion events by users are collected
+#   template:
+#     src: audit/wazuh_2620_file_deletion.rules.j2
+#     dest: /etc/audit/rules.d/wazuh_2620_file_deletion.rules
+#     mode: 0400
+#     owner: root
+#     group: root
 
-- name: Wazuh | 2621 | Ensure changes to system administration scope (sudoers) is collected
-  template:
-    src: audit/wazuh_2621_sudoers_scope.rules.j2
-    dest: /etc/audit/rules.d/wazuh_2621_sudoers_scope.rules
-    mode: 0400
-    owner: root
-    group: root
+# - name: Wazuh | 2621 | Ensure changes to system administration scope (sudoers) is collected
+#   template:
+#     src: audit/wazuh_2621_sudoers_scope.rules.j2
+#     dest: /etc/audit/rules.d/wazuh_2621_sudoers_scope.rules
+#     mode: 0400
+#     owner: root
+#     group: root
 
-- name: Wazuh | 2622 | Ensure system administrator actions (sudolog) are collected
-  template:
-    src: audit/wazuh_2622_sudoers_actions.rules.j2
-    dest: /etc/audit/rules.d/wazuh_2622_sudoers_actions.rules
-    mode: 0400
-    owner: root
-    group: root
+# - name: Wazuh | 2622 | Ensure system administrator actions (sudolog) are collected
+#   template:
+#     src: audit/wazuh_2622_sudoers_actions.rules.j2
+#     dest: /etc/audit/rules.d/wazuh_2622_sudoers_actions.rules
+#     mode: 0400
+#     owner: root
+#     group: root
 
-- name: Wazuh | 2623 | Ensure kernel module loading and unloading is collected
-  template:
-    src: audit/wazuh_2623_kernel.rules.j2
-    dest: /etc/audit/rules.d/wazuh_2623_kernel.rules
-    mode: 0400
-    owner: root
-    group: root
+# - name: Wazuh | 2623 | Ensure kernel module loading and unloading is collected
+#   template:
+#     src: audit/wazuh_2623_kernel.rules.j2
+#     dest: /etc/audit/rules.d/wazuh_2623_kernel.rules
+#     mode: 0400
+#     owner: root
+#     group: root
 
-- name: Wazuh | 2624 | Ensure the audit configuration is immutable
-  template:
-    src: audit/99-finalize.rules.j2
-    dest: /etc/audit/rules.d/99-finalize.rules.j2
-    mode: 0400
-    owner: root
-    group: root
+# - name: Wazuh | 2624 | Ensure the audit configuration is immutable
+#   template:
+#     src: audit/99-finalize.rules.j2
+#     dest: /etc/audit/rules.d/99-finalize.rules.j2
+#     mode: 0400
+#     owner: root
+#     group: root
 
-###- name: Wazuh | 2628 | Ensure rsyslog is configured to send logs to a remote log host
-#### all logs are sent to kibana
+# ###- name: Wazuh | 2628 | Ensure rsyslog is configured to send logs to a remote log host
+# #### all logs are sent to kibana
 
-- name: Wazuh | 2629 | Ensure remote rsyslog messages are only accepted on designated log hosts
-  lineinfile:
-    dest: /etc/rsyslog.conf
-    regexp: "^.*\$ModLoad imtcp.*"
-    line: "# $ModLoad imtcp"
-    create: yes
-    notify: rsyslog restart
+# - name: Wazuh | 2629 | Ensure remote rsyslog messages are only accepted on designated log hosts
+#   lineinfile:
+#     dest: /etc/rsyslog.conf
+#     regexp: "^.*\$ModLoad imtcp.*"
+#     line: "# $ModLoad imtcp"
+#     create: yes
+#     notify: rsyslog restart
 
-- name: Wazuh | 2629 | Ensure remote rsyslog messages are only accepted on designated log hosts
-  lineinfile:
-    dest: /etc/rsyslog.conf
-    regexp: "^.*\$InputTCPServerRun 514.*"
-    line: "# $InputTCPServerRun 514"
-    create: yes
-    notify: rsyslog restart
+# - name: Wazuh | 2629 | Ensure remote rsyslog messages are only accepted on designated log hosts
+#   lineinfile:
+#     dest: /etc/rsyslog.conf
+#     regexp: "^.*\$InputTCPServerRun 514.*"
+#     line: "# $InputTCPServerRun 514"
+#     create: yes
+#     notify: rsyslog restart
 
-- name: Wazuh | 2630 | Ensure journald is configured to send logs to rsyslog
-  lineinfile:
-    dest: /etc/systemd/journald.conf
-    regexp: "^.*ForwardToSyslog.*"
-    line: "ForwardToSyslog=yes"
-    create: yes
+# - name: Wazuh | 2630 | Ensure journald is configured to send logs to rsyslog
+#   lineinfile:
+#     dest: /etc/systemd/journald.conf
+#     regexp: "^.*ForwardToSyslog.*"
+#     line: "ForwardToSyslog=yes"
+#     create: yes
 
-- name: Wazuh | 2631 | Ensure journald is configured to compress large log files
-  lineinfile:
-    dest: /etc/systemd/journald.conf
-    regexp: "^.*Compress\s*\t*=.*"
-    line: "Compress=yes"
-    create: yes
+# - name: Wazuh | 2631 | Ensure journald is configured to compress large log files
+#   lineinfile:
+#     dest: /etc/systemd/journald.conf
+#     regexp: "^.*Compress\s*\t*=.*"
+#     line: "Compress=yes"
+#     create: yes
 
-- name: Wazuh | 2632 | Ensure journald is configured to write logfiles to persistent disk
-  lineinfile:
-    dest: /etc/systemd/journald.conf
-    regexp: "^.*Storage\s*\t*=.*"
-    line: "Storage=persistent"
-    create: yes
+# - name: Wazuh | 2632 | Ensure journald is configured to write logfiles to persistent disk
+#   lineinfile:
+#     dest: /etc/systemd/journald.conf
+#     regexp: "^.*Storage\s*\t*=.*"
+#     line: "Storage=persistent"
+#     create: yes
 
-#### shell variant
-# - name: Wazuh | 2633 | Ensure permissions on all logfiles are configured
-#   shell: find /var/log -type f -exec chmod g-wx,o-rwx "{}" + -o -type d -exec chmod g-w,o-rwx "{}" +
-#   register: log_files_dirs_changed
-#   changed_when: log_files_dirs_changed.stdout_lines | length > 0
+# #### shell variant
+# # - name: Wazuh | 2633 | Ensure permissions on all logfiles are configured
+# #   shell: find /var/log -type f -exec chmod g-wx,o-rwx "{}" + -o -type d -exec chmod g-w,o-rwx "{}" +
+# #   register: log_files_dirs_changed
+# #   changed_when: log_files_dirs_changed.stdout_lines | length > 0
 
-#### lazy non-idempotent variant
-# - name: Wazuh | 2633 | Ensure permissions on all logfiles are configured
-#   file:
-#     path: /var/log
-#     state: directory
-#     recurse: yes
-#     mode: g-wx,o-rwx
+# #### lazy non-idempotent variant
+# # - name: Wazuh | 2633 | Ensure permissions on all logfiles are configured
+# #   file:
+# #     path: /var/log
+# #     state: directory
+# #     recurse: yes
+# #     mode: g-wx,o-rwx
 
-# - name: Wazuh | 2633 | Ensure permissions on all logfiles are configured
-#   file:
-#     path: /var/log
-#     state: directory
-#     recurse: yes
-#     mode: g+X
+# # - name: Wazuh | 2633 | Ensure permissions on all logfiles are configured
+# #   file:
+# #     path: /var/log
+# #     state: directory
+# #     recurse: yes
+# #     mode: g+X
 
 - name: Wazuh | 2633 | Ensure permissions on all logfiles are configured | find files
   find:
@@ -573,6 +573,7 @@
     recurse: yes
     file_type: file
   register: files_in_var_log
+  when: not_use_shell
 
 - name: Wazuh | 2633 | Ensure permissions on all logfiles are configured | set files permissions
   file:
