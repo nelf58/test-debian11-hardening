@@ -812,7 +812,7 @@
     regexp: '^.*\$ModLoad imtcp.*'
     line: "# $ModLoad imtcp"
     create: yes
-  notify: rsyslog restart
+  notify: Wazuh | 2629 |  rsyslog restart
 
 - name: Wazuh | 2629 | Ensure remote rsyslog messages are only accepted on designated log hosts
   lineinfile:
@@ -820,7 +820,7 @@
     regexp: '^.*\$InputTCPServerRun 514.*'
     line: "# $InputTCPServerRun 514"
     create: yes
-  notify: rsyslog restart
+  notify: Wazuh | 2629 |  rsyslog restart
 
 # Compliance
 # cis: 4.2.2.1

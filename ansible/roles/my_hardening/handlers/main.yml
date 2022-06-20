@@ -20,3 +20,8 @@
 
 - name: Wazuh | 2579 | ipv6 route flush
   command: sysctl -w net.ipv6.route.flush=1
+
+- name: Wazuh | 2629 |  rsyslog restart
+  service:
+    name: rsyslog
+    state: restarted
