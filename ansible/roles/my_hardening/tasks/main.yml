@@ -573,7 +573,7 @@
     recurse: yes
     file_type: file
   register: files_in_var_log
-  when: not_use_shell
+  # when: dont_use_shell
 
 - name: Wazuh | 2633 | Ensure permissions on all logfiles are configured | set files permissions
   file:
