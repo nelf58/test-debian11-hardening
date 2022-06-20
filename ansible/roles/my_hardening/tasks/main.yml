@@ -407,6 +407,13 @@
     comment: Accept established
   when: firewall_service == "iptables"
 
+- name: Wazuh | 2601 | Ensure default deny firewall policy | allow OUTPUT
+  iptables:
+    chain: OUTPUT
+    jump: ACCEPT
+    comment: Accept output traffic.
+  when: firewall_service == "iptables"
+
 - name: Wazuh | 2601 | Ensure default deny firewall policy | iptables
   iptables:
     policy: DROP
@@ -415,7 +422,6 @@
     - INPUT
     - FORWARD
     - OUTPUT
-    - FORWARD
   when: firewall_service == "iptables"
 
 # Compliance
