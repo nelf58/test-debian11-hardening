@@ -385,13 +385,13 @@
 # tsc: CC6.6
 - name: Wazuh | 2593 | Ensure a Firewall package is installed | iptables
   apt:
-    name: "iptables"
+    name: ["iptables",  "iptables-persistent"]
     state: present
   when: firewall_service == "iptables"
 
 - name: Wazuh | 2593 | Ensure a Firewall package is installed | iptables
   apt:
-    name: ["nftables", "ufw", "iptables-persistent"]
+    name: ["nftables", "ufw"]
     state: absent
     purge: yes
   when: firewall_service == "iptables"
