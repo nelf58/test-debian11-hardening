@@ -413,7 +413,6 @@
     protocol: tcp
     destination_port: '{{ ssh_port }}'
     ctstate: NEW
-    syn: match
     jump: ACCEPT
     comment: Accept new SSH connections.
   when: firewall_service == "iptables" 
