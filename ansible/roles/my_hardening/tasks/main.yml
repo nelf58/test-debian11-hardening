@@ -391,8 +391,9 @@
 
 - name: Wazuh | 2593 | Ensure a Firewall package is installed | iptables
   apt:
-    name: ["nftables", "ufw"]
+    name: ["nftables", "ufw", "iptables-persistent"]
     state: absent
+    purge: yes
   when: firewall_service == "iptables"
 
 - name: Wazuh | 2593 | Ensure a Firewall package is installed | nftables
@@ -405,6 +406,7 @@
   apt:
     name: ["iptables", "ufw"]
     state: absent
+    purge: yes
   when: firewall_service == "nftables"
 
 - name: Wazuh | 2593 | Ensure a Firewall package is installed | ufw
@@ -417,7 +419,14 @@
   apt:
     name: ["iptables", "nftables"]
     state: absent
+    purge: yes
   when: firewall_service == "ufw"
+
+- name: Wazuh | 2593 | Ensure a Firewall package is installed | iptables enable
+  ansible.builtin.service:
+    name: iptables
+    enabled: yes
+    state: started
 
 # Compliance
 # cis: 3.5.2.1
