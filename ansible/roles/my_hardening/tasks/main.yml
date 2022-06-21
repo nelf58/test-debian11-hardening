@@ -500,6 +500,51 @@
     - OUTPUT
   when: firewall_service == "iptables"
 
+- name: Wazuh | 2601 | Ensure default deny firewall policy | allow OUTPUT
+  iptables:
+    chain: OUTPUT
+    jump: ACCEPT
+    ip_version: ipv6
+    comment: Accept output traffic.
+  when: firewall_service == "iptables"
+
+- name: Wazuh | 2601 | Ensure default deny firewall policy | IN allow SSH
+  iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_port: '{{ ssh_port }}'
+    ctstate: NEW
+    jump: ACCEPT
+    ip_version: ipv6
+    comment: Accept new SSH connections.
+  when: firewall_service == "iptables" 
+
+- name: Wazuh | 2601 | Ensure default deny firewall policy | IN related and established
+  iptables:
+    chain: INPUT
+    ctstate: ESTABLISHED,RELATED
+    jump: ACCEPT
+    ip_version: ipv6
+    comment: Accept related and established.
+  when: firewall_service == "iptables"
+
+- name: Wazuh | 2601 | Ensure default deny firewall policy | OUT established
+  iptables:
+    chain: OUTPUT
+    ctstate: ESTABLISHED
+    jump: ACCEPT
+    ip_version: ipv6
+    comment: Accept established
+  when: firewall_service == "iptables"
+
+- name: Wazuh | 2601 | Ensure default deny firewall policy | allow OUTPUT
+  iptables:
+    chain: OUTPUT
+    jump: ACCEPT
+    ip_version: ipv6
+    comment: Accept output traffic.
+  when: firewall_service == "iptables"
+
 # Compliance
 # cis: 3.5.4.1.2
 # cis_csc: 9.4
@@ -518,6 +563,24 @@
     chain: OUTPUT
     out_interface: 'lo'
     jump: ACCEPT
+    comment: Accept lo traffic.
+  when: firewall_service == "iptables"
+
+- name: Wazuh | 2602 | Ensure loopback traffic is configured
+  iptables:
+    chain: INPUT
+    in_interface: 'lo'
+    jump: ACCEPT
+    ip_version: ipv6
+    comment: Accept lo traffic.
+  when: firewall_service == "iptables"
+
+- name: Wazuh | 2602 | Ensure loopback traffic is configured
+  iptables:
+    chain: OUTPUT
+    out_interface: 'lo'
+    jump: ACCEPT
+    ip_version: ipv6
     comment: Accept lo traffic.
   when: firewall_service == "iptables"
 
