@@ -189,11 +189,11 @@
     regexp: '^\s*(#)?\*\s+hard\s+core\s+\d+'
     create: true
 
-- name: Wazuh | 2536 | Ensure core dumps are restricted
+- name: Wazuh | 2536 | Ensure core dumps are restricted | sysctl
   sysctl:
     name: fs.suid_dumpable
     value: "0"
-    sysctl_file: /etc/sysctl.d/fs-suid_dumpable.conf | sysctl
+    sysctl_file: /etc/sysctl.d/fs-suid_dumpable.conf
     state: present
     reload: true
     sysctl_set: true
@@ -206,6 +206,18 @@
 - name: Wazuh | 2536 | Ensure core dumps are restricted | daemon_reload
   systemd:
     daemon_reload: yes
+
+# Compliance
+# cis: 1.7.1.1
+# cis_csc: 14.6
+# nist_800_53: CM.1
+# pci_dss: 2.2.4
+# tsc: CC5.2
+- name: Wazuh | 2537 | Ensure AppArmor is installed
+  apt:
+    pkg:
+    - apparmor
+    - apparmor-utils
 
 # Compliance
 # cis: 1.8.1.1
@@ -287,6 +299,21 @@
     name: systemd-timesyncd
     enabled: yes
     state: started
+
+# Compliance
+# cis: 2.2.16
+# cis_csc: 9.2
+# nist_800_53: CM.1
+# pci_dss: 2.2.2
+- name: Wazuh | 2569 | Ensure rsync service is not enabled | get all services
+  service_facts:
+
+- name: Wazuh | 2569 | Ensure rsync service is not enabled
+  service:
+    name: rsync
+    state: stopped
+    enabled : no
+  when: ansible_facts.services['rsync'] is defined
 
 # Compliance
 # cis: 2.3.4
