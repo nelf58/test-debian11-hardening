@@ -379,6 +379,47 @@
     - disable_forwarding
 
 # Compliance
+# cis: 3.5.1.1
+# cis_csc: 9.4
+# pci_dss: 1.1
+# tsc: CC6.6
+- name: Wazuh | 2593 | Ensure a Firewall package is installed | iptables
+  apt:
+    name: "iptables"
+    state: present
+  when: firewall_service == "iptables"
+
+- name: Wazuh | 2593 | Ensure a Firewall package is installed | iptables
+  apt:
+    name: ["nftables", "ufw"]
+    state: absent
+  when: firewall_service == "iptables"
+
+- name: Wazuh | 2593 | Ensure a Firewall package is installed | nftables
+  apt:
+    name: "nftables"
+    state: present
+  when: firewall_service == "nftables"
+
+- name: Wazuh | 2593 | Ensure a Firewall package is installed | nftables
+  apt:
+    name: ["iptables", "ufw"]
+    state: absent
+  when: firewall_service == "nftables"
+
+- name: Wazuh | 2593 | Ensure a Firewall package is installed | ufw
+  apt:
+    name: "ufw"
+    state: present
+  when: firewall_service == "ufw"
+
+- name: Wazuh | 2593 | Ensure a Firewall package is installed | ufw
+  apt:
+    name: ["iptables", "nftables"]
+    state: absent
+  when: firewall_service == "ufw"
+
+# Compliance
 # cis: 3.5.2.1
 # cis_csc: 9.4
 # pci_dss: 1.2.1
@@ -408,7 +449,7 @@
 # pci_dss: 1.2.1
 # tsc: CC6.6
 - name: Wazuh | 2601 | Ensure default deny firewall policy | IN allow SSH
-  ansible.builtin.iptables:
+  iptables:
     chain: INPUT
     protocol: tcp
     destination_port: '{{ ssh_port }}'
