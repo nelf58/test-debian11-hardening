@@ -1025,6 +1025,7 @@
     dest:  '{{ item.path }}'
     mode: "g-wx,o-rwx"
   loop: '{{ files_in_var_log.files }}'
+  notify: log permissions
 
 - name: Wazuh | 2633 | Ensure permissions on all logfiles are configured | find dirs
   find:
@@ -1038,6 +1039,7 @@
     dest: '{{ item.path }}'
     mode: "g-w,o-rwx"
   loop: '{{ directories_in_var_log.files }}'
+  notify: log permissions
 
 # Compliance
 # cis: 4.4
@@ -1161,8 +1163,8 @@
 - name: Wazuh | 2669 | Ensure password hashing algorithm is SHA-512
   lineinfile:
     dest: /etc/pam.d/common-password
-    regexp: '\s*\t*#*\s*\t*password\s*\t*#*\s*\t*[success=1\s*\t*#*\s*\t*default=ignore]\s*\t*#*\s*\t*pam_unix.so\s*\t*#*\s*\t*sha512'
-    line: "password [success=1 default=ignore] pam_unix.so sha512"
+    regexp: '^password.*[success=1 default=ignore].*pam_unix.so.*'
+    line: "password	[success=1 default=ignore]	pam_unix.so obscure use_authtok try_first_pass yescrypt sha512"
 
 # Compliance
 # cis: 5.4.1.4
@@ -1239,3 +1241,4 @@
   loop:
     - /etc/passwd-
     - /etc/group-
+  notify: passwd- group- permissions

@@ -22,7 +22,7 @@
     # Wazuh | 2656 | Ensure only strong MAC algorithms are used
     - ssh_macs: ["hmac-sha2-512-etm@openssh.com", "hmac-sha2-256-etm@openssh.com", "hmac-sha2-512", "hmac-sha2-256"]
     # Wazuh | 2660 | Ensure SSH access is limited
-    - sh_deny_users: "root"
+    - ssh_deny_users: "root"
     # Wazuh | 2661 | Ensure SSH warning banner is configured
     - ssh_banner: "true"
     - ssh_banner_path: "/etc/issue.net"

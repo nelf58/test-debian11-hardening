@@ -25,3 +25,42 @@
   service:
     name: rsyslog
     state: restarted
+
+- name: passwd- group- permissions
+  file:
+    dest: '{{ item }}'
+    mode: "u-x,go-rwx"
+  loop:
+    - /etc/passwd-
+    - /etc/group-
+
+
+- name: log permissions
+  block:
+    - name: find files
+      find:
+        paths: /var/log
+        recurse: yes
+        file_type: file
+      register: files_in_var_log
+
+    - name: set files permissions
+      file:
+        dest:  '{{ item.path }}'
+        mode: "g-wx,o-rwx"
+      loop: '{{ files_in_var_log.files }}'
+      notify: var_log_permissions
+
+    - name: find dirs
+      find:
+        paths: /var/log
+        recurse: yes
+        file_type: directory
+      register: directories_in_var_log
+
+    - name: set dirs permissions
+      file:
+        dest: '{{ item.path }}'
+        mode: "g-w,o-rwx"
+      loop: '{{ directories_in_var_log.files }}'
+      notify: var_log_permissions
