@@ -374,9 +374,7 @@
     state: present
   notify:
     - Wazuh | 2579 | ipv6 route flush
-  when: 
-    - ipv6_disable
-    - disable_forwarding
+  when: disable_forwarding
 
 # Compliance
 # cis: 3.5.1.1
@@ -457,204 +455,204 @@
 # cis_csc: 9.4
 # pci_dss: 1.2.1
 # tsc: CC6.6
-- name: Wazuh | 2601 | Ensure default deny firewall policy | IN allow SSH
-  iptables:
-    chain: INPUT
-    protocol: tcp
-    destination_port: '{{ ssh_port }}'
-    ctstate: NEW
-    jump: ACCEPT
-    comment: Accept new SSH connections.
-  when: firewall_service == "iptables" 
+# - name: Wazuh | 2601 | Ensure default deny firewall policy | IN allow SSH
+#   iptables:
+#     chain: INPUT
+#     protocol: tcp
+#     destination_port: '{{ ssh_port }}'
+#     ctstate: NEW
+#     jump: ACCEPT
+#     comment: Accept new SSH connections.
+#   when: firewall_service == "iptables" 
 
-- name: Wazuh | 2601 | Ensure default deny firewall policy | IN related and established
-  iptables:
-    chain: INPUT
-    ctstate: ESTABLISHED,RELATED
-    jump: ACCEPT
-    comment: Accept related and established.
-  when: firewall_service == "iptables"
+# - name: Wazuh | 2601 | Ensure default deny firewall policy | IN related and established
+#   iptables:
+#     chain: INPUT
+#     ctstate: ESTABLISHED,RELATED
+#     jump: ACCEPT
+#     comment: Accept related and established.
+#   when: firewall_service == "iptables"
 
-- name: Wazuh | 2601 | Ensure default deny firewall policy | OUT established
-  iptables:
-    chain: OUTPUT
-    ctstate: ESTABLISHED
-    jump: ACCEPT
-    comment: Accept established
-  when: firewall_service == "iptables"
+# - name: Wazuh | 2601 | Ensure default deny firewall policy | OUT established
+#   iptables:
+#     chain: OUTPUT
+#     ctstate: ESTABLISHED
+#     jump: ACCEPT
+#     comment: Accept established
+#   when: firewall_service == "iptables"
 
-- name: Wazuh | 2601 | Ensure default deny firewall policy | allow OUTPUT
-  iptables:
-    chain: OUTPUT
-    jump: ACCEPT
-    comment: Accept output traffic.
-  when: firewall_service == "iptables"
+# - name: Wazuh | 2601 | Ensure default deny firewall policy | allow OUTPUT
+#   iptables:
+#     chain: OUTPUT
+#     jump: ACCEPT
+#     comment: Accept output traffic.
+#   when: firewall_service == "iptables"
 
-- name: Wazuh | 2601 | Ensure default deny firewall policy | iptables
-  iptables:
-    policy: DROP
-    chain: "{{ item }}"
-  with_items:
-    - INPUT
-    - FORWARD
-    - OUTPUT
-  when: firewall_service == "iptables"
+# - name: Wazuh | 2601 | Ensure default deny firewall policy | iptables
+#   iptables:
+#     policy: DROP
+#     chain: "{{ item }}"
+#   with_items:
+#     - INPUT
+#     - FORWARD
+#     - OUTPUT
+#   when: firewall_service == "iptables"
 
-- name: Wazuh | 2601 | Ensure default deny firewall policy | allow OUTPUT
-  iptables:
-    chain: OUTPUT
-    jump: ACCEPT
-    ip_version: ipv6
-    comment: Accept output traffic.
-  when: firewall_service == "iptables"
+# - name: Wazuh | 2601 | Ensure default deny firewall policy | allow OUTPUT
+#   iptables:
+#     chain: OUTPUT
+#     jump: ACCEPT
+#     ip_version: ipv6
+#     comment: Accept output traffic.
+#   when: firewall_service == "iptables"
 
-- name: Wazuh | 2601 | Ensure default deny firewall policy | IN allow SSH
-  iptables:
-    chain: INPUT
-    protocol: tcp
-    destination_port: '{{ ssh_port }}'
-    ctstate: NEW
-    jump: ACCEPT
-    ip_version: ipv6
-    comment: Accept new SSH connections.
-  when: firewall_service == "iptables" 
+# - name: Wazuh | 2601 | Ensure default deny firewall policy | IN allow SSH
+#   iptables:
+#     chain: INPUT
+#     protocol: tcp
+#     destination_port: '{{ ssh_port }}'
+#     ctstate: NEW
+#     jump: ACCEPT
+#     ip_version: ipv6
+#     comment: Accept new SSH connections.
+#   when: firewall_service == "iptables" 
 
-- name: Wazuh | 2601 | Ensure default deny firewall policy | IN related and established
-  iptables:
-    chain: INPUT
-    ctstate: ESTABLISHED,RELATED
-    jump: ACCEPT
-    ip_version: ipv6
-    comment: Accept related and established.
-  when: firewall_service == "iptables"
+# - name: Wazuh | 2601 | Ensure default deny firewall policy | IN related and established
+#   iptables:
+#     chain: INPUT
+#     ctstate: ESTABLISHED,RELATED
+#     jump: ACCEPT
+#     ip_version: ipv6
+#     comment: Accept related and established.
+#   when: firewall_service == "iptables"
 
-- name: Wazuh | 2601 | Ensure default deny firewall policy | OUT established
-  iptables:
-    chain: OUTPUT
-    ctstate: ESTABLISHED
-    jump: ACCEPT
-    ip_version: ipv6
-    comment: Accept established
-  when: firewall_service == "iptables"
+# - name: Wazuh | 2601 | Ensure default deny firewall policy | OUT established
+#   iptables:
+#     chain: OUTPUT
+#     ctstate: ESTABLISHED
+#     jump: ACCEPT
+#     ip_version: ipv6
+#     comment: Accept established
+#   when: firewall_service == "iptables"
 
-- name: Wazuh | 2601 | Ensure default deny firewall policy | allow OUTPUT
-  iptables:
-    chain: OUTPUT
-    jump: ACCEPT
-    ip_version: ipv6
-    comment: Accept output traffic.
-  when: firewall_service == "iptables"
+# - name: Wazuh | 2601 | Ensure default deny firewall policy | allow OUTPUT
+#   iptables:
+#     chain: OUTPUT
+#     jump: ACCEPT
+#     ip_version: ipv6
+#     comment: Accept output traffic.
+#   when: firewall_service == "iptables"
 
-# Compliance
-# cis: 3.5.4.1.2
-# cis_csc: 9.4
-# pci_dss: 1.2.1
-# tsc: CC6.6
-- name: Wazuh | 2602 | Ensure loopback traffic is configured
-  iptables:
-    chain: INPUT
-    in_interface: 'lo'
-    jump: ACCEPT
-    comment: Accept lo traffic.
-  when: firewall_service == "iptables"
+# # Compliance
+# # cis: 3.5.4.1.2
+# # cis_csc: 9.4
+# # pci_dss: 1.2.1
+# # tsc: CC6.6
+# - name: Wazuh | 2602 | Ensure loopback traffic is configured
+#   iptables:
+#     chain: INPUT
+#     in_interface: 'lo'
+#     jump: ACCEPT
+#     comment: Accept lo traffic.
+#   when: firewall_service == "iptables"
 
-- name: Wazuh | 2602 | Ensure loopback traffic is configured
-  iptables:
-    chain: OUTPUT
-    out_interface: 'lo'
-    jump: ACCEPT
-    comment: Accept lo traffic.
-  when: firewall_service == "iptables"
+# - name: Wazuh | 2602 | Ensure loopback traffic is configured
+#   iptables:
+#     chain: OUTPUT
+#     out_interface: 'lo'
+#     jump: ACCEPT
+#     comment: Accept lo traffic.
+#   when: firewall_service == "iptables"
 
-- name: Wazuh | 2602 | Ensure loopback traffic is configured
-  iptables:
-    chain: INPUT
-    in_interface: 'lo'
-    jump: ACCEPT
-    ip_version: ipv6
-    comment: Accept lo traffic.
-  when: firewall_service == "iptables"
+# - name: Wazuh | 2602 | Ensure loopback traffic is configured
+#   iptables:
+#     chain: INPUT
+#     in_interface: 'lo'
+#     jump: ACCEPT
+#     ip_version: ipv6
+#     comment: Accept lo traffic.
+#   when: firewall_service == "iptables"
 
-- name: Wazuh | 2602 | Ensure loopback traffic is configured
-  iptables:
-    chain: OUTPUT
-    out_interface: 'lo'
-    jump: ACCEPT
-    ip_version: ipv6
-    comment: Accept lo traffic.
-  when: firewall_service == "iptables"
+# - name: Wazuh | 2602 | Ensure loopback traffic is configured
+#   iptables:
+#     chain: OUTPUT
+#     out_interface: 'lo'
+#     jump: ACCEPT
+#     ip_version: ipv6
+#     comment: Accept lo traffic.
+#   when: firewall_service == "iptables"
 
-- name: Wazuh | 2602 | Ensure loopback traffic is configured
-  iptables:
-    chain: INPUT
-    jump: DROP
-    source: "127.0.0.0/8"
-    comment: Drop non-lo loopback traffic
-  when: firewall_service == "iptables"
+# - name: Wazuh | 2602 | Ensure loopback traffic is configured
+#   iptables:
+#     chain: INPUT
+#     jump: DROP
+#     source: "127.0.0.0/8"
+#     comment: Drop non-lo loopback traffic
+#   when: firewall_service == "iptables"
   
-# Compliance
-# cis: 3.5.4.2.1
-# cis_csc: 9.4
-# pci_dss: 1.2.1
-# tsc: CC8.1
-- name: Wazuh | 2603 | Ensure IPv6 default deny firewall policy | allow OUTPUT
-  iptables:
-    chain: OUTPUT
-    ip_version: ipv6
-    jump: ACCEPT
-    comment: Accept output traffic.
-  when: firewall_service == "iptables"
+# # Compliance
+# # cis: 3.5.4.2.1
+# # cis_csc: 9.4
+# # pci_dss: 1.2.1
+# # tsc: CC8.1
+# - name: Wazuh | 2603 | Ensure IPv6 default deny firewall policy | allow OUTPUT
+#   iptables:
+#     chain: OUTPUT
+#     ip_version: ipv6
+#     jump: ACCEPT
+#     comment: Accept output traffic.
+#   when: firewall_service == "iptables"
 
-- name: Wazuh | 2603 | Ensure IPv6 default deny firewall policy
-  iptables:
-    ip_version: ipv6
-    policy: DROP
-    chain: "{{ item }}"
-  with_items:
-    - INPUT
-    - FORWARD
-    - OUTPUT
-  when: 
-    - firewall_service == "iptables"
-    # - ipv6_disable|bool == false
+# - name: Wazuh | 2603 | Ensure IPv6 default deny firewall policy
+#   iptables:
+#     ip_version: ipv6
+#     policy: DROP
+#     chain: "{{ item }}"
+#   with_items:
+#     - INPUT
+#     - FORWARD
+#     - OUTPUT
+#   when: 
+#     - firewall_service == "iptables"
+#     # - ipv6_disable|bool == false
 
-# Compliance
-# cis: 3.5.4.2.2
-# cis_csc: 9.4
-# pci_dss: 1.2.1
-# tsc: CC8.1
-- name: Wazuh | 2604 | Ensure IPv6 loopback traffic is configured
-  iptables:
-    ip_version: ipv6
-    chain: INPUT
-    in_interface: 'lo'
-    jump: ACCEPT
-    comment: Accept lo traffic.
-  when: 
-    - firewall_service == "iptables"
-    # - ipv6_disable|bool == false
+# # Compliance
+# # cis: 3.5.4.2.2
+# # cis_csc: 9.4
+# # pci_dss: 1.2.1
+# # tsc: CC8.1
+# - name: Wazuh | 2604 | Ensure IPv6 loopback traffic is configured
+#   iptables:
+#     ip_version: ipv6
+#     chain: INPUT
+#     in_interface: 'lo'
+#     jump: ACCEPT
+#     comment: Accept lo traffic.
+#   when: 
+#     - firewall_service == "iptables"
+#     # - ipv6_disable|bool == false
 
-- name: Wazuh | 2604 | Ensure IPv6 loopback traffic is configured
-  iptables:
-    ip_version: ipv6
-    chain: OUTPUT
-    out_interface: 'lo'
-    jump: ACCEPT
-    comment: Accept lo traffic.
-  when: 
-    - firewall_service == "iptables"
-    # - ipv6_disable|bool == false
+# - name: Wazuh | 2604 | Ensure IPv6 loopback traffic is configured
+#   iptables:
+#     ip_version: ipv6
+#     chain: OUTPUT
+#     out_interface: 'lo'
+#     jump: ACCEPT
+#     comment: Accept lo traffic.
+#   when: 
+#     - firewall_service == "iptables"
+#     # - ipv6_disable|bool == false
 
-- name: Wazuh | 2604 | Ensure IPv6 loopback traffic is configured
-  iptables:
-    ip_version: ipv6
-    chain: INPUT
-    jump: DROP
-    source: "::1"
-    comment: Drop non-lo loopback traffic
-  when: 
-    - firewall_service == "iptables"
-    # - ipv6_disable|bool == false
+# - name: Wazuh | 2604 | Ensure IPv6 loopback traffic is configured
+#   iptables:
+#     ip_version: ipv6
+#     chain: INPUT
+#     jump: DROP
+#     source: "::1"
+#     comment: Drop non-lo loopback traffic
+#   when: 
+#     - firewall_service == "iptables"
+#     # - ipv6_disable|bool == false
 
 # Compliance
 # cis: 4.1.1.1
