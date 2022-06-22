@@ -196,7 +196,7 @@
     sysctl_file: /etc/sysctl.d/fs-suid_dumpable.conf
     state: present
     reload: true
-    sysctl_set: true
+    sysctl_set: yes
 
 - name: Wazuh | 2536 | Ensure core dumps are restricted | apt
   apt:
