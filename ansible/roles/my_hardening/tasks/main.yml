@@ -603,6 +603,15 @@
     comment: Accept output traffic.
   when: firewall_service == "iptables"
 
+- name: Wazuh | 2603 | Ensure IPv6 default deny firewall policy | ipv6-icmp
+  iptables:
+    chain: INPUT
+    ip_version: ipv6
+    jump: ACCEPT
+    protocol: ipv6-icmp
+    comment: Accept output traffic.
+  when: firewall_service == "iptables"
+
 - name: Wazuh | 2603 | Ensure IPv6 default deny firewall policy
   iptables:
     ip_version: ipv6
