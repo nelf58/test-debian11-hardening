@@ -609,7 +609,7 @@
     ip_version: ipv6
     jump: ACCEPT
     protocol: ipv6-icmp
-    comment: Accept output traffic.
+    comment: Accept ipv6-icmp traffic.
   when: firewall_service == "iptables"
 
 - name: Wazuh | 2603 | Ensure IPv6 default deny firewall policy
