@@ -34,33 +34,7 @@
     - /etc/passwd-
     - /etc/group-
 
-
 - name: log permissions
-  block:
-    - name: find files
-      find:
-        paths: /var/log
-        recurse: yes
-        file_type: file
-      register: files_in_var_log
-
-    - name: set files permissions
-      file:
-        dest:  '{{ item.path }}'
-        mode: "g-wx,o-rwx"
-      loop: '{{ files_in_var_log.files }}'
-      notify: var_log_permissions
-
-    - name: find dirs
-      find:
-        paths: /var/log
-        recurse: yes
-        file_type: directory
-      register: directories_in_var_log
-
-    - name: set dirs permissions
-      file:
-        dest: '{{ item.path }}'
-        mode: "g-w,o-rwx"
-      loop: '{{ directories_in_var_log.files }}'
-      notify: var_log_permissions
+  shell: find /var/log -type f -exec chmod g-wx,o-rwx "{}" + -o -type d -exec chmod g-w,o-rwx "{}" +
+  register: log_files_dirs_changed
+  changed_when: log_files_dirs_changed.stdout_lines | length > 0
