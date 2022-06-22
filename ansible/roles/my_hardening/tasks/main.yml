@@ -1116,7 +1116,7 @@
 - name: Wazuh | 2666 | Ensure password creation requirements are configured | pwquality.conf
   lineinfile:
     dest: /etc/security/pwquality.conf
-    regexp: "^\s*\t*#*\s*\t*{{ item.parameter }}.*"
+    regexp: '^\s*\t*#*\s*\t*{{ item.parameter }}.*'
     line: "{{ item.parameter }} = {{ item.value }}"
     create: yes
   loop:
@@ -1138,7 +1138,7 @@
 
 - name: Wazuh | 2667 | Ensure lockout for failed password attempts is configured | common-auth
   lineinfile:
-    regexp: "^\s*\t*#*\s*\t*auth\s*\t*required\s*\t*pam_tally2.so\s*\t*onerr=fail\s*\t*audit\s*\t*silent\s*\t*deny=\d{1,999}\s*\t*unlock_time=\d{1,999}.*"
+    regexp: '^\s*\t*#*\s*\t*auth\s*\t*required\s*\t*pam_tally2.so\s*\t*onerr=fail\s*\t*audit\s*\t*silent\s*\t*deny=\d{1,999}\s*\t*unlock_time=\d{1,999}.*'
     dest: /etc/pam.d/common-auth
     line: "auth required pam_tally2.so onerr=fail audit silent deny=5 unlock_time=900"
     create: yes
@@ -1150,8 +1150,8 @@
     line: "{{ item.line }}"
     create: yes
   loop:
-    - { regex: "^\s*\t*#*\s*\t*account\s*\t*requisite\s*\t*pam_deny.so", line: "account requisite pam_deny.so" }
-    - { regex: "^\s*\t*#*\s*\t*account\s*\t*required\s*\t*pam_tally2.so", line: "account required pam_tally2.so" }
+    - { regex: '^\s*\t*#*\s*\t*account\s*\t*requisite\s*\t*pam_deny.so', line: "account requisite pam_deny.so" }
+    - { regex: '^\s*\t*#*\s*\t*account\s*\t*required\s*\t*pam_tally2.so', line: "account required pam_tally2.so" }
 
 # Compliance
 # cis: 5.3.4
@@ -1161,7 +1161,7 @@
 - name: Wazuh | 2669 | Ensure password hashing algorithm is SHA-512
   lineinfile:
     dest: /etc/pam.d/common-password
-    regexp: "\s*\t*#*\s*\t*password\s*\t*#*\s*\t*[success=1\s*\t*#*\s*\t*default=ignore]\s*\t*#*\s*\t*pam_unix.so\s*\t*#*\s*\t*sha512"
+    regexp: '\s*\t*#*\s*\t*password\s*\t*#*\s*\t*[success=1\s*\t*#*\s*\t*default=ignore]\s*\t*#*\s*\t*pam_unix.so\s*\t*#*\s*\t*sha512'
     line: "password [success=1 default=ignore] pam_unix.so sha512"
 
 # Compliance
@@ -1181,21 +1181,21 @@
 - name: Wazuh | 2676 | Ensure default user shell timeout is 900 seconds or less | bash.bashrc
   lineinfile:
     dest: /etc/bash.bashrc
-    regexp: "^\s*\t*#*\s*\t*TMOUT\s*\t*="
+    regexp: '^\s*\t*#*\s*\t*TMOUT\s*\t*='
     line: "readonly TMOUT=900 ; export TMOUT"
     create: true
 
 - name: Wazuh | 2676 | Ensure default user shell timeout is 900 seconds or less | profile
   lineinfile:
     dest: /etc/profile
-    regexp: "^\s*\t*#*\s*\t*TMOUT\s*\t*="
+    regexp: '^\s*\t*#*\s*\t*TMOUT\s*\t*='
     line: "readonly TMOUT=900 ; export TMOUT"
     create: true
 
 - name: Wazuh | 2676 | Ensure default user shell timeout is 900 seconds or less | profile.d
   lineinfile:
     dest: /etc/profile.d/wazuh_TMOUT.sh
-    regexp: "^\s*\t*#*\s*\t*TMOUT\s*\t*="
+    regexp: '^\s*\t*#*\s*\t*TMOUT\s*\t*='
     line: "readonly TMOUT=900 ; export TMOUT"
     create: true
 
