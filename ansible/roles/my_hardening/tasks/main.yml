@@ -464,6 +464,7 @@
     jump: ACCEPT
     comment: Accept new SSH connections.
   when: firewall_service == "iptables" 
+  notify: iptables save
 
 - name: Wazuh | 2601 | Ensure default deny firewall policy | IN related and established
   iptables:
@@ -472,6 +473,7 @@
     jump: ACCEPT
     comment: Accept related and established.
   when: firewall_service == "iptables"
+  notify: iptables save
 
 - name: Wazuh | 2601 | Ensure default deny firewall policy | OUT established
   iptables:
@@ -480,6 +482,7 @@
     jump: ACCEPT
     comment: Accept established
   when: firewall_service == "iptables"
+  notify: iptables save
 
 - name: Wazuh | 2601 | Ensure default deny firewall policy | allow OUTPUT
   iptables:
@@ -487,6 +490,7 @@
     jump: ACCEPT
     comment: Accept output traffic.
   when: firewall_service == "iptables"
+  notify: iptables save
 
 - name: Wazuh | 2601 | Ensure default deny firewall policy | iptables
   iptables:
@@ -497,6 +501,7 @@
     - FORWARD
     - OUTPUT
   when: firewall_service == "iptables"
+  notify: iptables save
 
 - name: Wazuh | 2601 | Ensure default deny firewall policy | allow OUTPUT
   iptables:
@@ -505,6 +510,8 @@
     ip_version: ipv6
     comment: Accept output traffic.
   when: firewall_service == "iptables"
+  notify: iptables save
+
 
 - name: Wazuh | 2601 | Ensure default deny firewall policy | IN allow SSH
   iptables:
@@ -515,7 +522,9 @@
     jump: ACCEPT
     ip_version: ipv6
     comment: Accept new SSH connections.
-  when: firewall_service == "iptables" 
+  when: firewall_service == "iptables"
+  notify: iptables save
+
 
 - name: Wazuh | 2601 | Ensure default deny firewall policy | IN related and established
   iptables:
@@ -525,6 +534,8 @@
     ip_version: ipv6
     comment: Accept related and established.
   when: firewall_service == "iptables"
+  notify: iptables save
+
 
 - name: Wazuh | 2601 | Ensure default deny firewall policy | OUT established
   iptables:
@@ -534,6 +545,8 @@
     ip_version: ipv6
     comment: Accept established
   when: firewall_service == "iptables"
+  notify: iptables save
+
 
 - name: Wazuh | 2601 | Ensure default deny firewall policy | allow OUTPUT
   iptables:
@@ -542,6 +555,8 @@
     ip_version: ipv6
     comment: Accept output traffic.
   when: firewall_service == "iptables"
+  notify: iptables save
+
 
 # Compliance
 # cis: 3.5.4.1.2
@@ -555,6 +570,7 @@
     jump: ACCEPT
     comment: Accept lo traffic.
   when: firewall_service == "iptables"
+  notify: iptables save
 
 - name: Wazuh | 2602 | Ensure loopback traffic is configured
   iptables:
@@ -563,6 +579,7 @@
     jump: ACCEPT
     comment: Accept lo traffic.
   when: firewall_service == "iptables"
+  notify: iptables save
 
 - name: Wazuh | 2602 | Ensure loopback traffic is configured
   iptables:
@@ -572,6 +589,7 @@
     ip_version: ipv6
     comment: Accept lo traffic.
   when: firewall_service == "iptables"
+  notify: iptables save
 
 - name: Wazuh | 2602 | Ensure loopback traffic is configured
   iptables:
@@ -581,6 +599,7 @@
     ip_version: ipv6
     comment: Accept lo traffic.
   when: firewall_service == "iptables"
+  notify: iptables save
 
 - name: Wazuh | 2602 | Ensure loopback traffic is configured
   iptables:
@@ -589,6 +608,7 @@
     source: "127.0.0.0/8"
     comment: Drop non-lo loopback traffic
   when: firewall_service == "iptables"
+  notify: iptables save
   
 # Compliance
 # cis: 3.5.4.2.1
@@ -602,6 +622,7 @@
     jump: ACCEPT
     comment: Accept output traffic.
   when: firewall_service == "iptables"
+  notify: iptables save
 
 - name: Wazuh | 2603 | Ensure IPv6 default deny firewall policy | ipv6-icmp
   iptables:
@@ -611,6 +632,7 @@
     protocol: ipv6-icmp
     comment: Accept ipv6-icmp traffic.
   when: firewall_service == "iptables"
+  notify: iptables save
 
 - name: Wazuh | 2603 | Ensure IPv6 default deny firewall policy
   iptables:
@@ -624,6 +646,7 @@
   when: 
     - firewall_service == "iptables"
     # - ipv6_disable|bool == false
+  notify: iptables save
 
 # Compliance
 # cis: 3.5.4.2.2
@@ -640,6 +663,7 @@
   when: 
     - firewall_service == "iptables"
     # - ipv6_disable|bool == false
+  notify: iptables save
 
 - name: Wazuh | 2604 | Ensure IPv6 loopback traffic is configured
   iptables:
@@ -651,6 +675,7 @@
   when: 
     - firewall_service == "iptables"
     # - ipv6_disable|bool == false
+  notify: iptables save
 
 - name: Wazuh | 2604 | Ensure IPv6 loopback traffic is configured
   iptables:
@@ -662,6 +687,7 @@
   when: 
     - firewall_service == "iptables"
     # - ipv6_disable|bool == false
+  notify: iptables save
 
 # Compliance
 # cis: 4.1.1.1

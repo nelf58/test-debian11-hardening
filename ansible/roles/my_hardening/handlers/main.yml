@@ -38,3 +38,8 @@
   shell: find /var/log -type f -exec chmod g-wx,o-rwx "{}" + -o -type d -exec chmod g-w,o-rwx "{}" +
   register: log_files_dirs_changed
   changed_when: log_files_dirs_changed.stdout_lines | length > 0
+
+- name: iptables save
+  shell: |
+    iptables-save > /etc/iptables/rules.v4
+    ip6tables-save > /etc/iptables/rules.v6
