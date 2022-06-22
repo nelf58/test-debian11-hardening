@@ -1136,12 +1136,13 @@
     name: libpam-modules
     state: present
 
-- name: Wazuh | 2667 | Ensure lockout for failed password attempts is configured | common-auth
-  lineinfile:
-    regexp: '^\s*\t*#*\s*\t*auth\s*\t*required\s*\t*pam_tally2.so\s*\t*onerr=fail\s*\t*audit\s*\t*silent\s*\t*deny=\d{1,999}\s*\t*unlock_time=\d{1,999}.*'
-    dest: /etc/pam.d/common-auth
-    line: "auth required pam_tally2.so onerr=fail audit silent deny=5 unlock_time=900"
-    create: yes
+### pam_tally2.so is deprecated in Debian 11
+# - name: Wazuh | 2667 | Ensure lockout for failed password attempts is configured | common-auth
+#   lineinfile:
+#     regexp: '^\s*\t*#*\s*\t*auth\s*\t*required\s*\t*pam_tally2.so\s*\t*onerr=fail\s*\t*audit\s*\t*silent\s*\t*deny=\d{1,999}\s*\t*unlock_time=\d{1,999}.*'
+#     dest: /etc/pam.d/common-auth
+#     line: "auth required pam_tally2.so onerr=fail audit silent deny=5 unlock_time=900"
+#     create: yes
 
 - name: Wazuh | 2667 | Ensure lockout for failed password attempts is configured | common-account
   lineinfile:
@@ -1150,8 +1151,9 @@
     line: "{{ item.line }}"
     create: yes
   loop:
+### pam_tally2.so is deprecated in Debian 11
     - { regex: '^\s*\t*#*\s*\t*account\s*\t*requisite\s*\t*pam_deny.so', line: "account requisite pam_deny.so" }
-    - { regex: '^\s*\t*#*\s*\t*account\s*\t*required\s*\t*pam_tally2.so', line: "account required pam_tally2.so" }
+    # - { regex: '^\s*\t*#*\s*\t*account\s*\t*required\s*\t*pam_tally2.so', line: "account required pam_tally2.so" }
 
 # Compliance
 # cis: 5.3.4
